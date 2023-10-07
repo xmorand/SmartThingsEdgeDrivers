@@ -16,9 +16,9 @@ components:
         version: 1
       - id: refresh
         version: 1
-      - id: Voltage
+      - id: voltageMeasurement
         version: 1
-      - id: Signal Strenght
+      - id: signalStrength
         version: 1
     categories:
       - name: MotionSensor
