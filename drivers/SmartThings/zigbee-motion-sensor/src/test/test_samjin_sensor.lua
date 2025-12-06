@@ -40,9 +40,7 @@ local mock_device = test.mock_device.build_test_zigbee_device(
 
 zigbee_test_utils.prepare_zigbee_env_info()
 local function test_init()
-  test.mock_device.add_test_device(mock_device)
-  zigbee_test_utils.init_noop_health_check_timer()
-end
+  test.mock_device.add_test_device(mock_device)end
 test.set_test_init_function(test_init)
 
 
@@ -70,7 +68,11 @@ test.register_coroutine_test(
     })
     test.socket.zigbee:__expect_send({
       mock_device.id,
-      TemperatureMeasurement.attributes.MeasuredValue:configure_reporting(mock_device, 30, 300, 16)
+      TemperatureMeasurement.attributes.MeasuredValue:configure_reporting(mock_device, 30, 600, 100)
+    })
+    test.socket.zigbee:__expect_send({
+      mock_device.id,
+      TemperatureMeasurement.attributes.MeasuredValue:configure_reporting(mock_device, 30, 600, 100)
     })
     test.socket.zigbee:__expect_send({
       mock_device.id,
@@ -88,14 +90,18 @@ test.register_coroutine_test(
       mock_device.id,
       IASZone.attributes.ZoneStatus:read(mock_device)
     })
+    -- test.socket.zigbee:__expect_send({
+    --   mock_device.id,
+    --   IASZone.attributes.ZoneStatus:configure_reporting(mock_device, 30, 300, 0)
+    -- })
     test.socket.zigbee:__expect_send({
       mock_device.id,
-      IASZone.attributes.ZoneStatus:configure_reporting(mock_device, 30, 300, 0)
+      IASZone.attributes.ZoneStatus:configure_reporting(mock_device, 0xFFFF, 0x0000, 0)
     })
-    test.socket.zigbee:__expect_send({
-      mock_device.id,
-      zigbee_test_utils.build_bind_request(mock_device, zigbee_test_utils.mock_hub_eui, IASZone.ID)
-    })
+    -- test.socket.zigbee:__expect_send({
+    --   mock_device.id,
+    --   zigbee_test_utils.build_bind_request(mock_device, zigbee_test_utils.mock_hub_eui, IASZone.ID)
+    -- })
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
   end
 )

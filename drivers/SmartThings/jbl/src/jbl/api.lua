@@ -2,6 +2,7 @@ local log = require "log"
 local json = require "st.json"
 local RestClient = require "lunchbox.rest"
 local utils = require "utils"
+local st_utils = require "st.utils"
 local cosock = require "cosock"
 
 local jbl_api = {}
@@ -68,7 +69,7 @@ function jbl_api.new_device_manager(bridge_ip, bridge_info, socket_builder)
 
   return setmetatable(
       {
-        headers = ADDITIONAL_HEADERS,
+        headers = st_utils.deep_copy(ADDITIONAL_HEADERS),
         client = RestClient.new(base_url, socket_builder),
         base_url = base_url,
       }, jbl_api
@@ -104,7 +105,22 @@ function jbl_api.get_credential(bridge_ip, socket_builder)
 end
 
 function jbl_api.get_info(device_ip, socket_builder)
-  return process_rest_response(RestClient.one_shot_get(get_base_url(device_ip) .. "/info", ADDITIONAL_HEADERS, socket_builder))
+  local raw_device_info = process_rest_response(RestClient.one_shot_get(get_base_url(device_ip) .. "/info", ADDITIONAL_HEADERS, socket_builder))
+  if raw_device_info == nil then
+    log.error("failed to get device info")
+    return nil
+  end
+
+  local device_info = {
+    deviceType = raw_device_info.deviceType or "",
+    firmwareVersion = raw_device_info.firmwareVersion or "",
+    label = raw_device_info.label or "",
+    manufacturerName = raw_device_info.manufacturerName or "",
+    modelName = raw_device_info.modelName or "",
+    serialNumber = raw_device_info.serialNumber or "",
+  }
+
+  return device_info
 end
 
 function jbl_api:get_status()

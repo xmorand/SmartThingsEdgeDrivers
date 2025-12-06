@@ -37,9 +37,7 @@ local mock_device = test.mock_device.build_test_zigbee_device(
 )
 
 local function test_init()
-  test.mock_device.add_test_device(mock_device)
-  zigbee_test_utils.init_noop_health_check_timer()
-end
+  test.mock_device.add_test_device(mock_device)end
 
 test.set_test_init_function(test_init)
 
@@ -315,7 +313,8 @@ test.register_coroutine_test(
       mock_device:generate_test_message("main", button_attr.pushed({ state_change = true }))
     )
     test.wait_for_events()
-
+    test.socket.zigbee:__queue_receive({ mock_device.id, zigbee_test_utils.build_custom_command_id(mock_device, Scenes.ID, Scenes.server.commands.RecallScene.ID, 0x0000, "\x05\x00\x00\x00\x05\x00", 0x1F) })
+    test.wait_for_events()
   end
 )
 

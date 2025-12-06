@@ -18,5 +18,5 @@ components:
   categories:
   - name: Blind
 preferences:
-  - preferenceId: presetPosition
+  - preferenceId: reverse
     explicit: true

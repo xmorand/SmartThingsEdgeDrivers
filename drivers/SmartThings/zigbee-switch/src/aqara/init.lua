@@ -1,3 +1,6 @@
+-- Copyright 2025 SmartThings, Inc.
+-- Licensed under the Apache License, Version 2.0
+
 local capabilities = require "st.capabilities"
 local clusters = require "st.zigbee.zcl.clusters"
 local cluster_base = require "st.zigbee.cluster_base"
@@ -17,20 +20,12 @@ local WIRELESS_SWITCH_CLUSTER_ID = 0x0012
 local WIRELESS_SWITCH_ATTRIBUTE_ID = 0x0055
 local RESTORE_POWER_STATE_ATTRIBUTE_ID = 0x0201
 local CHANGE_TO_WIRELESS_SWITCH_ATTRIBUTE_ID = 0x0200
+local RESTORE_TURN_OFF_INDICATOR_LIGHT_ATTRIBUTE_ID = 0x0203
 local MAX_POWER_ATTRIBUTE_ID = 0x020B
 local ELECTRIC_SWITCH_TYPE_ATTRIBUTE_ID = 0x000A
 
 local LAST_REPORT_TIME = "LAST_REPORT_TIME"
 local PRIVATE_MODE = "PRIVATE_MODE"
-
-local FINGERPRINTS = {
-  { mfr = "LUMI", model = "lumi.plug.maeu01" },
-  { mfr = "LUMI", model = "lumi.switch.n0agl1" },
-  { mfr = "LUMI", model = "lumi.switch.n1acn1" },
-  { mfr = "LUMI", model = "lumi.switch.n2acn1" },
-  { mfr = "LUMI", model = "lumi.switch.n3acn1" },
-  { mfr = "LUMI", model = "lumi.switch.b2laus01" }
-}
 
 local preference_map = {
   ["stse.restorePowerState"] = {
@@ -77,6 +72,39 @@ local preference_map = {
       ["23"] = SinglePrecisionFloat(0, 11, 0.123046875)
     },
   },
+  ["stse.maxPowerCN"] = {
+    cluster_id = PRIVATE_CLUSTER_ID,
+    attribute_id = MAX_POWER_ATTRIBUTE_ID,
+    mfg_code = MFG_CODE,
+    data_type = data_types.SinglePrecisionFloat,
+    value_map = {
+      ["1"] = SinglePrecisionFloat(0, 6, 0.5625),
+      ["2"] = SinglePrecisionFloat(0, 7, 0.5625),
+      ["3"] = SinglePrecisionFloat(0, 8, 0.171875),
+      ["4"] = SinglePrecisionFloat(0, 8, 0.5625),
+      ["5"] = SinglePrecisionFloat(0, 8, 0.953125),
+      ["6"] = SinglePrecisionFloat(0, 9, 0.171875),
+      ["7"] = SinglePrecisionFloat(0, 9, 0.3671875),
+      ["8"] = SinglePrecisionFloat(0, 9, 0.5625),
+      ["9"] = SinglePrecisionFloat(0, 9, 0.7578125),
+      ["10"] = SinglePrecisionFloat(0, 9, 0.953125),
+      ["11"] = SinglePrecisionFloat(0, 10, 0.07421875),
+      ["12"] = SinglePrecisionFloat(0, 10, 0.171875),
+      ["13"] = SinglePrecisionFloat(0, 10, 0.26953125),
+      ["14"] = SinglePrecisionFloat(0, 10, 0.3671875),
+      ["15"] = SinglePrecisionFloat(0, 10, 0.46484375),
+      ["16"] = SinglePrecisionFloat(0, 10, 0.5625),
+      ["17"] = SinglePrecisionFloat(0, 10, 0.66015625),
+      ["18"] = SinglePrecisionFloat(0, 10, 0.7578125),
+      ["19"] = SinglePrecisionFloat(0, 10, 0.85546875),
+      ["20"] = SinglePrecisionFloat(0, 10, 0.953125),
+      ["21"] = SinglePrecisionFloat(0, 11, 0.025390625),
+      ["22"] = SinglePrecisionFloat(0, 11, 0.07421875),
+      ["23"] = SinglePrecisionFloat(0, 11, 0.123046875),
+      ["24"] = SinglePrecisionFloat(0, 11, 0.171875),
+      ["25"] = SinglePrecisionFloat(0, 11, 0.220703125)
+    },
+  },
   ["stse.electricSwitchType"] = {
     cluster_id = PRIVATE_CLUSTER_ID,
     attribute_id = ELECTRIC_SWITCH_TYPE_ATTRIBUTE_ID,
@@ -84,21 +112,21 @@ local preference_map = {
     data_type = data_types.Uint8,
     value_map = { rocker = 0x01, rebound = 0x02 },
   },
+  ["stse.turnOffIndicatorLight"] = {
+    cluster_id = PRIVATE_CLUSTER_ID,
+    attribute_id = RESTORE_TURN_OFF_INDICATOR_LIGHT_ATTRIBUTE_ID,
+    mfg_code = MFG_CODE,
+    data_type = data_types.Boolean,
+  },
 }
 
-local function is_aqara_products(opts, driver, device)
-  for _, fingerprint in ipairs(FINGERPRINTS) do
-    if device:get_manufacturer() == fingerprint.mfr and device:get_model() == fingerprint.model then
-      return true
-    end
-  end
-  return false
-end
 
 local function private_mode_handler(driver, device, value, zb_rx)
   device:set_field(PRIVATE_MODE, value.value, { persist = true })
 
   if value.value ~= 1 then
+    device:send(cluster_base.write_manufacturer_specific_attribute(device,
+      PRIVATE_CLUSTER_ID, PRIVATE_ATTRIBUTE_ID, MFG_CODE, data_types.Uint8, 0x01)) -- private
     device:send(SimpleMetering.attributes.CurrentSummationDelivered:configure_reporting(device, 900, 3600, 1)) -- minimal interval : 15min
     device:set_field(constants.ELECTRICAL_MEASUREMENT_DIVISOR_KEY, 10, { persist = true })
     device:set_field(constants.SIMPLE_METERING_DIVISOR_KEY, 1000, { persist = true })
@@ -112,9 +140,20 @@ local function wireless_switch_handler(driver, device, value, zb_rx)
   end
 end
 
-local function energy_meter_power_consumption_report(device, raw_value)
+local function energy_meter_power_consumption_report(driver, device, value, zb_rx)
+  -- ignore unexpected event when the device is private mode
+  local private_mode = device:get_field(PRIVATE_MODE) or 0
+  if private_mode == 1 then return end
+
+  local raw_value = value.value
   -- energy meter
-  device:emit_event(capabilities.energyMeter.energy({ value = raw_value, unit = "Wh" }))
+  local offset = device:get_field(constants.ENERGY_METER_OFFSET) or 0
+  if raw_value < offset then
+    --- somehow our value has gone below the offset, so we'll reset the offset, since the device seems to have
+    offset = 0
+    device:set_field(constants.ENERGY_METER_OFFSET, offset, {persist = true})
+  end
+  device:emit_event(capabilities.energyMeter.energy({ value = raw_value - offset, unit = "Wh" }))
 
   -- report interval
   local current_time = os.time()
@@ -136,20 +175,21 @@ local function energy_meter_power_consumption_report(device, raw_value)
 end
 
 local function power_meter_handler(driver, device, value, zb_rx)
+  -- ignore unexpected event when the device is private mode
+  local private_mode = device:get_field(PRIVATE_MODE) or 0
+  if private_mode == 1 then return end
+
   local raw_value = value.value -- '10W'
   raw_value = raw_value / 10
   device:emit_event(capabilities.powerMeter.power({ value = raw_value, unit = "W" }))
 end
 
-local function energy_meter_handler(driver, device, value, zb_rx)
-  local raw_value = value.value -- 'Wh'
-  energy_meter_power_consumption_report(device, raw_value)
-end
-
 local function do_refresh(self, device)
   device:send(OnOff.attributes.OnOff:read(device))
-  device:send(ElectricalMeasurement.attributes.ActivePower:read(device))
-  device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
+  if (device:supports_capability_by_id(capabilities.powerMeter.ID)) then
+    device:send(ElectricalMeasurement.attributes.ActivePower:read(device))
+    device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
+  end
 end
 
 local function device_info_changed(driver, device, event, args)
@@ -179,11 +219,13 @@ local function do_configure(self, device)
 end
 
 local function device_added(driver, device)
-  device:emit_event(capabilities.powerMeter.power({ value = 0.0, unit = "W" }))
-  device:emit_event(capabilities.energyMeter.energy({ value = 0.0, unit = "Wh" }))
-
-  device:send(cluster_base.write_manufacturer_specific_attribute(device,
-    PRIVATE_CLUSTER_ID, PRIVATE_ATTRIBUTE_ID, MFG_CODE, data_types.Uint8, 0x01)) -- private
+  if (device:supports_capability_by_id(capabilities.button.ID)) then
+    device:emit_event(capabilities.button.supportedButtonValues({ "pushed" }, { visibility = { displayed = false } }))
+  end
+  if (device:supports_capability_by_id(capabilities.powerMeter.ID)) then
+    device:emit_event(capabilities.powerMeter.power({ value = 0.0, unit = "W" }))
+    device:emit_event(capabilities.energyMeter.energy({ value = 0.0, unit = "Wh" }))
+  end
 end
 
 local aqara_switch_handler = {
@@ -204,7 +246,7 @@ local aqara_switch_handler = {
         [ElectricalMeasurement.attributes.ActivePower.ID] = power_meter_handler
       },
       [SimpleMetering.ID] = {
-        [SimpleMetering.attributes.CurrentSummationDelivered.ID] = energy_meter_handler
+        [SimpleMetering.attributes.CurrentSummationDelivered.ID] = energy_meter_power_consumption_report
       },
       [WIRELESS_SWITCH_CLUSTER_ID] = {
         [WIRELESS_SWITCH_ATTRIBUTE_ID] = wireless_switch_handler
@@ -218,7 +260,7 @@ local aqara_switch_handler = {
     require("aqara.version"),
     require("aqara.multi-switch")
   },
-  can_handle = is_aqara_products
+  can_handle = require("aqara.can_handle"),
 }
 
 return aqara_switch_handler

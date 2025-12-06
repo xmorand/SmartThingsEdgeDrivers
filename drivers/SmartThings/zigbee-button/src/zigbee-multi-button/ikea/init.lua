@@ -22,12 +22,28 @@ local mgmt_bind_req = require "st.zigbee.zdo.mgmt_bind_request"
 local utils = require 'st.utils'
 local zdo_messages = require "st.zigbee.zdo"
 local supported_values = require "zigbee-multi-button.supported_values"
+local button_utils = require "button_utils"
 
 local OnOff = clusters.OnOff
 local PowerConfiguration = clusters.PowerConfiguration
 local Groups = clusters.Groups
 
 local ENTRIES_READ = "ENTRIES_READ"
+
+local IKEA_MFG = {
+  { mfr = "IKEA of Sweden" },
+  { mfr = "KE" },
+  { mfr = "\02KE" }
+}
+
+local can_handle_ikea = function(opts, driver, device)
+  for _, fingerprint in ipairs(IKEA_MFG) do
+    if device:get_manufacturer() == fingerprint.mfr then
+      return true
+    end
+  end
+  return false
+end
 
 local do_configure = function(self, device)
   device:send(device_management.build_bind_request(device, PowerConfiguration.ID, self.environment_info.hub_zigbee_eui))
@@ -65,8 +81,8 @@ local function added_handler(self, device)
     device:emit_component_event(component, capabilities.button.numberOfButtons({value = number_of_buttons}))
   end
   device:send(PowerConfiguration.attributes.BatteryPercentageRemaining:read(device))
-  device:emit_event(capabilities.button.button.pushed({state_change = false}))
-end
+  button_utils.emit_event_if_latest_state_missing(device, "main", capabilities.button, capabilities.button.button.NAME, capabilities.button.button.pushed({state_change = false}))
+  end
 
 local function zdo_binding_table_handler(driver, device, zb_rx)
   for _, binding_table in pairs(zb_rx.body.zdo_body.binding_table_entries) do
@@ -129,9 +145,7 @@ local ikea_of_sweden = {
     require("zigbee-multi-button.ikea.TRADFRI_on_off_switch"),
     require("zigbee-multi-button.ikea.TRADFRI_open_close_remote")
   },
-  can_handle = function(opts, driver, device, ...)
-    return device:get_manufacturer() == "IKEA of Sweden" or device:get_manufacturer() == "KE"
-  end
+  can_handle = can_handle_ikea
 }
 
 return ikea_of_sweden

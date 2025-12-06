@@ -160,6 +160,11 @@ local function device_init(driver, device)
 
   driver.controlled_devices[device_dni] = device
 
+  if driver.datastore.discovery_cache[device_dni] then
+    log.warn("set unsaved device field")
+    discovery.set_device_field(driver, device)
+  end
+
   local device_ip = device:get_field(fields.DEVICE_IPV4)
   local device_info = device:get_field(fields.DEVICE_INFO)
   local credential = device:get_field(fields.CREDENTIAL)
@@ -174,6 +179,16 @@ local function device_init(driver, device)
 
   refresh(driver, device, nil)
   device:set_field(fields._INIT, true, { persist = false })
+
+  device:emit_event(capabilities.mediaPlayback.supportedPlaybackCommands({
+    capabilities.mediaPlayback.commands.play.NAME,
+    capabilities.mediaPlayback.commands.pause.NAME,
+  }))
+
+  device:emit_event(capabilities.mediaTrackControl.supportedTrackControlCommands({
+    capabilities.mediaTrackControl.commands.nextTrack.NAME,
+    capabilities.mediaTrackControl.commands.previousTrack.NAME,
+  }))
 end
 
 local lan_driver = Driver("jbl",
@@ -199,7 +214,6 @@ local lan_driver = Driver("jbl",
       [capabilities.mediaPlayback.ID] = {
         [capabilities.mediaPlayback.commands.play.NAME] = jbl_capability_handler.playback_play_handler,
         [capabilities.mediaPlayback.commands.pause.NAME] = jbl_capability_handler.playback_pause_handler,
-        [capabilities.mediaPlayback.commands.stop.NAME] = jbl_capability_handler.playback_stop_handler,
       },
       [capabilities.audioNotification.ID] = {
         [capabilities.audioNotification.commands.playTrack.NAME] = jbl_capability_handler.audioNotification_handler,
@@ -213,6 +227,10 @@ local lan_driver = Driver("jbl",
     controlled_devices = {},
   }
 )
+
+if lan_driver.datastore.discovery_cache == nil then
+  lan_driver.datastore.discovery_cache = {}
+end
 
 lan_driver:call_on_schedule(CONNECTION_MONITORING_INTERVAL, connection_monitoring, "JBL Connection monitoring thread")
 

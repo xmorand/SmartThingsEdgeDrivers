@@ -1,16 +1,5 @@
--- Copyright 2022 SmartThings
---
--- Licensed under the Apache License, Version 2.0 (the "License");
--- you may not use this file except in compliance with the License.
--- You may obtain a copy of the License at
---
---     http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
+-- Copyright 2025 SmartThings, Inc.
+-- Licensed under the Apache License, Version 2.0
 
 local capabilities = require "st.capabilities"
 --- @type st.zwave.defaults
@@ -27,6 +16,8 @@ local Configuration = (require "st.zwave.CommandClass.Configuration")({ version 
 local SwitchMultilevel = (require "st.zwave.CommandClass.SwitchMultilevel")({ version = 4 })
 local preferencesMap = require "preferences"
 local configurationsMap = require "configurations"
+
+local lazy_load_if_possible = require "lazy_load_subdriver"
 
 --- Map component to end_points(channels)
 ---
@@ -130,25 +121,26 @@ local driver_template = {
     }
   },
   sub_drivers = {
-    require("eaton-accessory-dimmer"),
-    require("inovelli-LED"),
-    require("dawon-smart-plug"),
-    require("inovelli-2-channel-smart-plug"),
-    require("zwave-dual-switch"),
-    require("eaton-anyplace-switch"),
-    require("fibaro-wall-plug-us"),
-    require("dawon-wall-smart-switch"),
-    require("zooz-power-strip"),
-    require("aeon-smart-strip"),
-    require("qubino-switches"),
-    require("fibaro-double-switch"),
-    require("fibaro-single-switch"),
-    require("eaton-5-scene-keypad"),
-    require("ecolink-switch"),
-    require("multi-metering-switch"),
-    require("zooz-zen-30-dimmer-relay"),
-    require("multichannel-device"),
-    require("aeotec-smart-switch")
+    lazy_load_if_possible("eaton-accessory-dimmer"),
+    lazy_load_if_possible("inovelli"),
+    lazy_load_if_possible("dawon-smart-plug"),
+    lazy_load_if_possible("inovelli-2-channel-smart-plug"),
+    lazy_load_if_possible("zwave-dual-switch"),
+    lazy_load_if_possible("eaton-anyplace-switch"),
+    lazy_load_if_possible("fibaro-wall-plug-us"),
+    lazy_load_if_possible("dawon-wall-smart-switch"),
+    lazy_load_if_possible("zooz-power-strip"),
+    lazy_load_if_possible("aeon-smart-strip"),
+    lazy_load_if_possible("qubino-switches"),
+    lazy_load_if_possible("fibaro-double-switch"),
+    lazy_load_if_possible("fibaro-single-switch"),
+    lazy_load_if_possible("eaton-5-scene-keypad"),
+    lazy_load_if_possible("ecolink-switch"),
+    lazy_load_if_possible("multi-metering-switch"),
+    lazy_load_if_possible("zooz-zen-30-dimmer-relay"),
+    lazy_load_if_possible("multichannel-device"),
+    lazy_load_if_possible("aeotec-smart-switch"),
+    lazy_load_if_possible("aeotec-heavy-duty")
   },
   lifecycle_handlers = {
     init = device_init,
@@ -158,7 +150,9 @@ local driver_template = {
   }
 }
 
-defaults.register_for_default_handlers(driver_template, driver_template.supported_capabilities)
+defaults.register_for_default_handlers(driver_template,
+  driver_template.supported_capabilities,
+  {native_capability_cmds_enabled = true, native_capability_attrs_enabled = true})
 --- @type st.zwave.Driver
 local switch = ZwaveDriver("zwave_switch", driver_template)
 switch:run()

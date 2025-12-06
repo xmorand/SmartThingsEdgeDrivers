@@ -18,6 +18,7 @@ local ThermostatMode = capabilities.thermostatMode
 local MFG_CODE = 0x1246
 local ETRV_WINDOW_OPEN_DETECTION_ATTR_ID = 0x4000
 local EXTERNAL_WINDOW_OPEN_DETECTION = 0x4003
+local THERMOSTAT_SETPOINT_CMD_ID = 0x40
 
 -- utils
 local zigbee_test_utils = require "integration_test.zigbee_test_utils"
@@ -42,9 +43,7 @@ local mock_device = test.mock_device.build_test_zigbee_device(
 
 zigbee_test_utils.prepare_zigbee_env_info()
 local function test_init()
-  test.mock_device.add_test_device(mock_device)
-  zigbee_test_utils.init_noop_health_check_timer()
-end
+  test.mock_device.add_test_device(mock_device)end
 
 test.set_test_init_function(test_init)
 
@@ -81,7 +80,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send(
       {
         mock_device.id,
-        Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_device, 2750)
+        cluster_base.build_manufacturer_specific_command(mock_device, Thermostat.ID, THERMOSTAT_SETPOINT_CMD_ID, MFG_CODE, string.char(0x00, (math.floor(27.5 * 100) & 0xFF), (math.floor(27.5 * 100) >> 8)))
       }
     )
     test.wait_for_events()
@@ -91,6 +90,44 @@ test.register_coroutine_test(
       {
         mock_device.id,
         Thermostat.attributes.OccupiedHeatingSetpoint:read(mock_device)
+      }
+    )
+  end
+)
+
+test.register_coroutine_test(
+  "External window open detection window open",
+  function()
+    test.timer.__create_and_queue_test_time_advance_timer(2, "oneshot")
+    test.socket.capability:__queue_receive(
+      {
+        mock_device.id,
+        { capability = "switch", component = "main", command = "on", args = {} }
+      }
+    )
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        cluster_base.write_manufacturer_specific_attribute(mock_device, Thermostat.ID, EXTERNAL_WINDOW_OPEN_DETECTION, MFG_CODE, data_types.Boolean, false)
+      }
+    )
+  end
+)
+
+test.register_coroutine_test(
+  "External window open detection window closed",
+  function()
+    test.timer.__create_and_queue_test_time_advance_timer(2, "oneshot")
+    test.socket.capability:__queue_receive(
+      {
+        mock_device.id,
+        { capability = "switch", component = "main", command = "off", args = {} }
+      }
+    )
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        cluster_base.write_manufacturer_specific_attribute(mock_device, Thermostat.ID, EXTERNAL_WINDOW_OPEN_DETECTION, MFG_CODE, data_types.Boolean, true)
       }
     )
   end
@@ -253,6 +290,165 @@ test.register_coroutine_test(
         capabilities.battery.battery(batt_perc)))
       test.wait_for_events()
     end
+  end
+)
+
+test.register_coroutine_test(
+  "Setting the thermostat mode to heat should generate the correct zigbee messages",
+  function()
+    test.timer.__create_and_queue_test_time_advance_timer(2, "oneshot")
+    test.socket.capability:__queue_receive(
+      {
+        mock_device.id,
+        {
+          component = "main",
+          capability = capabilities.thermostatMode.ID,
+          command = "heat",
+          args = {}
+        }
+      }
+    )
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        Thermostat.attributes.SystemMode:write(mock_device,
+        Thermostat.attributes.SystemMode.HEAT)
+      }
+    )
+
+    test.wait_for_events()
+    test.mock_time.advance_time(2)
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        Thermostat.attributes.SystemMode:read(mock_device)
+      }
+    )
+  end
+)
+
+test.register_coroutine_test(
+  "Setting the thermostat mode to off should generate the correct zigbee messages",
+  function()
+    test.timer.__create_and_queue_test_time_advance_timer(2, "oneshot")
+    test.socket.capability:__queue_receive(
+      {
+        mock_device.id,
+        {
+          component = "main",
+          capability = capabilities.thermostatMode.ID,
+          command = "off",
+          args = {}
+        }
+      }
+    )
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        Thermostat.attributes.SystemMode:write(mock_device,
+        Thermostat.attributes.SystemMode.OFF)
+      }
+    )
+
+    test.wait_for_events()
+    test.mock_time.advance_time(2)
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        Thermostat.attributes.SystemMode:read(mock_device)
+      }
+    )
+  end
+)
+
+test.register_coroutine_test(
+  "Setting the thermostat mode should generate the appropriate messages",
+  function ()
+    test.socket.capability:__queue_receive({ mock_device.id, { component = "main", capability = capabilities.thermostatMode.ID, command = "setThermostatMode", args = {"eco"} } })
+    test.socket.zigbee:__expect_send(
+      {
+        mock_device.id,
+        cluster_base.build_manufacturer_specific_command(mock_device, Thermostat.ID, THERMOSTAT_SETPOINT_CMD_ID, MFG_CODE, string.char(0x00, (math.floor(21.0 * 100) & 0xFF), (math.floor(21.0 * 100) >> 8)))
+      }
+    )
+    test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.thermostatMode.thermostatMode.eco()))
+  end
+)
+
+test.register_coroutine_test(
+  "init and doConfigure lifecycles should be handled properly",
+  function()
+      test.timer.__create_and_queue_test_time_advance_timer(2, "oneshot")
+      test.socket.zigbee:__set_channel_ordering("relaxed")
+
+      test.socket.device_lifecycle:__queue_receive({ mock_device.id, "init" })
+      test.mock_time.advance_time(2)
+      test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.thermostatMode.thermostatMode.eco()))
+      test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.switch.switch.on()))
+      test.socket.zigbee:__expect_send(
+        {
+          mock_device.id,
+          Thermostat.attributes.OccupiedHeatingSetpoint:read(mock_device)
+        }
+      )
+      test.socket.zigbee:__expect_send(
+        {
+          mock_device.id,
+          ThermostatUIConfig.attributes.KeypadLockout:read(mock_device)
+        }
+      )
+      test.socket.zigbee:__expect_send(
+        {
+          mock_device.id,
+          PowerConfiguration.attributes.BatteryVoltage:read(mock_device)
+        }
+      )
+      test.socket.zigbee:__expect_send(
+        {
+          mock_device.id,
+          Thermostat.attributes.LocalTemperature:read(mock_device)
+        }
+      )
+      test.socket.zigbee:__expect_send({mock_device.id, cluster_base.read_manufacturer_specific_attribute(
+        mock_device,
+        Thermostat.ID,
+        ETRV_WINDOW_OPEN_DETECTION_ATTR_ID,
+        MFG_CODE
+      )})
+      test.socket.zigbee:__expect_send({mock_device.id, cluster_base.read_manufacturer_specific_attribute(
+        mock_device,
+        Thermostat.ID,
+        EXTERNAL_WINDOW_OPEN_DETECTION,
+        MFG_CODE
+      )})
+  end
+)
+
+test.register_coroutine_test(
+  "Device reported Thermostat WINDOW_OPEN_DETECTION_ATTR_ID attribute",
+  function()
+    local attr_report_data = {
+      { ETRV_WINDOW_OPEN_DETECTION_ATTR_ID, data_types.Uint8.ID, 1 }
+    }
+    test.socket.zigbee:__queue_receive({
+      mock_device.id,
+      zigbee_test_utils.build_attribute_report(mock_device, Thermostat.ID, attr_report_data, MFG_CODE)
+    })
+    test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.temperatureAlarm.temperatureAlarm.cleared()))
+  end
+)
+
+test.register_coroutine_test(
+  "Device reported Thermostat WINDOW_OPEN_DETECTION_ATTR_ID attribute",
+  function()
+    local attr_report_data = {
+      { EXTERNAL_WINDOW_OPEN_DETECTION, data_types.Uint8.ID, 1 }
+    }
+    test.socket.zigbee:__queue_receive({
+      mock_device.id,
+      zigbee_test_utils.build_attribute_report(mock_device, Thermostat.ID, attr_report_data, MFG_CODE)
+    })
+    test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.switch.switch.off()))
   end
 )
 
