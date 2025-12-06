@@ -7,6 +7,7 @@ local constants = require "st.zigbee.constants"
 
 local SimpleMetering = clusters.SimpleMetering
 local ElectricalMeasurement = clusters.ElectricalMeasurement
+local TemperatureMeasurement = clusters.TemperatureMeasurement
 
 local function active_power_meter_handler(driver, device, value, zb_rx)
   local raw_value = value.value
@@ -43,3 +44,24 @@ local zigbee_switch_power = {
 }
 
 return zigbee_switch_power
+
+
+local function electrical_measurement_handler(driver, device, value, raw)
+  if value.attr_id == 0x0400 then  -- Active Power
+    device:emit_event(capabilities.powerMeter.power({value = value.value, unit = "W"}))
+  elseif value.attr_id == 0x0505 then  -- RMS Voltage
+    device:emit_event(capabilities.voltageMeasurement.voltage({value = value.value, unit = "V"}))
+  elseif value.attr_id == 0x0508 then  -- RMS Current
+    device:emit_event(capabilities.currentMeter.current({value = value.value, unit = "A"}))
+  end
+end
+
+local function metering_handler(driver, device, value, raw)
+  if value.attr_id == 0x0000 then  -- Cumulative Energy
+    device:emit_event(capabilities.energyMeter.energy({value = value.value / 1000, unit = "kWh"}))
+  end
+end
+
+local function temperature_handler(driver, device, value, raw)
+  device:emit_event(capabilities.temperatureMeasurement.temperature({value = value.value / 100, unit = "C"}))
+end
