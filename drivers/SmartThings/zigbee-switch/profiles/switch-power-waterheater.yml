@@ -6,14 +6,18 @@ components:
         version: 1
       - id: powerMeter
         version: 1
-      - id: temperatureMeasurement
+      - id: voltageMeasurement
         version: 1
-      - id: waterSensor  
-        version: 1
-      - id: voltageMeasurement 
+      - id: currentMeter
         version: 1
       - id: energyMeter
         version: 1
+      - id: temperatureMeasurement
+        version: 1
+      - id: waterLeak
+        version: 1
+      - id: thermostatCoolingSetpoint
+        version: 1  # For low water temp protection setpoint
       - id: firmwareUpdate
         version: 1
       - id: refresh
