@@ -68,6 +68,9 @@ local zigbee_switch_driver_template = {
     capabilities.illuminanceMeasurement,
     capabilities.relativeHumidityMeasurement,
     capabilities.temperatureMeasurement,
+    capabilities.waterSensor,
+    capabilities.voltageMeasurement,
+    
   },
   sub_drivers = {
     lazy_load_if_possible("non_zigbee_devices"),
@@ -78,6 +81,7 @@ local zigbee_switch_driver_template = {
     lazy_load_if_possible("rexense"),
     lazy_load_if_possible("sinope"),
     lazy_load_if_possible("sinope-dimmer"),
+    lazy_load_if_possible("sinope-waterheater"),
     lazy_load_if_possible("zigbee-dimmer-power-energy"),
     lazy_load_if_possible("zigbee-metering-plug-power-consumption-report"),
     lazy_load_if_possible("jasco"),
@@ -99,6 +103,7 @@ local zigbee_switch_driver_template = {
     lazy_load_if_possible("laisiao"),
     lazy_load_if_possible("tuya-multi"),
     lazy_load_if_possible("frient")
+
   },
   zigbee_handlers = {
     global = {
