@@ -395,7 +395,7 @@ zigbeeManufacturer:
     deviceLabel: "RM3500ZB Sinope Load Controller"
     manufacturer: Sinope Technologies
     model: RM3500ZB
-    deviceProfileName: sinope-switch-rm3500zb
+    deviceProfileName: switch-power-waterheater
   - id: "Sinope Dimmer Switch/DM2500ZB"
     deviceLabel: "DM2500ZB Sinope Dimmer"
     manufacturer: Sinope Technologies
