@@ -45,16 +45,16 @@ local function leak_attr_handler(driver, device, value, zb_rx)
 end
 
 -- -- Active power from 0x0B04/0x050B[web:45]
--- local function active_power_meter_handler(driver, device, value, zb_rx)
---   log.info("========================================")
---   log.info("RM3500ZB POWERMETER HANDLER CALLED")
---   local raw_value = value.value
---   local divisor = device:get_field(constants.ELECTRICAL_MEASUREMENT_DIVISOR_KEY) or 10
+ local function active_power_meter_handler(driver, device, value, zb_rx)
+   log.info("========================================")
+   log.info("RM3500ZB POWERMETER HANDLER CALLED")
+   local raw_value = value.value
+   local divisor = device:get_field(constants.ELECTRICAL_MEASUREMENT_DIVISOR_KEY) or 10
 
---   raw_value = raw_value / divisor
+   raw_value = raw_value / divisor
 
---   device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
--- end
+   device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
+ end
 
 local function instantaneous_demand_handler(driver, device, value, zb_rx)
   log.info("========================================")
