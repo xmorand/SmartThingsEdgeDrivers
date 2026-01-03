@@ -32,7 +32,7 @@ local ElectricalMeasurement = clusters.ElectricalMeasurement   -- 0x0B04
 local Thermostat            = clusters.Thermostat
 
 -- Leak state from IAS Zone 0x0500/0x0002[web:45]
-local function leak_attr_handler(driver, device, value, zb_rx)
+local function water_sensor_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB LEAK HANDLER CALLED")
   local zone_status = value.value
@@ -101,11 +101,11 @@ end
 -- CONFIGURE HANDLER - Set reporting intervals
 -- ============================================================================
 
-local function do_configure(driver, device)
+local function configure_device(driver, device)
   log.info("========================================")
-  log.info("RM3500ZB DOCONFIG HANDLER CALLED")
+  log.info("RM3500ZB CONFIGURE DEVICE HANDLER CALLED")
   log.info("========================================")
-  
+
   -- Configure Temperature reporting (every 30s to 5min, on 0.5°C change)
   device:send(TemperatureMeasurement.attributes.MeasuredValue:configure_reporting(
     device,
@@ -199,7 +199,7 @@ local sinope_rm3500zb = {
     }
   },
   lifecycle_handlers = {
-    doConfigure = do_configure,  -- Called when device is added/configured
+    init = configure_device,  -- Called when device is added/configured
   },
   zigbee_handlers = {
     attr = {
@@ -215,6 +215,9 @@ local sinope_rm3500zb = {
       [TemperatureMeasurement.ID] = {
         [TemperatureMeasurement.attributes.MeasuredValue.ID] = temperature_handler
       },
+      [IASZone.ID] = {
+        [IASZone.attributes.ZoneStatus.ID] = water_sensor_handler
+      },
     },
   },
   can_handle = require("sinope-waterheater.can_handle")
@@ -222,3 +225,6 @@ local sinope_rm3500zb = {
 
 
 return sinope_rm3500zb
+
+
+
