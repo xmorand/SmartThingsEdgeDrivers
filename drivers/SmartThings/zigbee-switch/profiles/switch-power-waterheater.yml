@@ -17,7 +17,7 @@ components:
       - id: waterLeak
         version: 1
       - id: thermostatCoolingSetpoint
-        version: 1  # For low water temp protection setpoint
+        version: 1
       - id: firmwareUpdate
         version: 1
       - id: refresh
