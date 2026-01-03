@@ -8,7 +8,6 @@ local constants = require "st.zigbee.constants"
 local SimpleMetering = clusters.SimpleMetering
 local ElectricalMeasurement = clusters.ElectricalMeasurement
 local TemperatureMeasurement = clusters.TemperatureMeasurement
-local Metering = clusters.Metering
 
 local function active_power_meter_handler(driver, device, value, zb_rx)
   local raw_value = value.value
@@ -42,6 +41,9 @@ local function metering_handler(driver, device, value, zb_rx)
 end
 
 local function temperature_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("ZIGBEE GENERIC SWITCHPOWER TEMPERATURE HANDLER CALLED")
+  log.info("========================================")
   device:emit_event(capabilities.temperatureMeasurement.temperature({value = value.value / 100, unit = "C"}))
 end
 
@@ -51,14 +53,13 @@ local zigbee_switch_power = {
     attr = {
       [ElectricalMeasurement.ID] = {
         [ElectricalMeasurement.attributes.ActivePower.ID] = active_power_meter_handler,
-        [ElectricalMeasurement.attributes.RmsVoltage.ID] = rms_voltage_handler,
-        [ElectricalMeasurement.attributes.RmsCurrent.ID] = rms_current_handler
+        [ElectricalMeasurement.attributes.RMSVoltage.ID] = rms_voltage_handler,
+        [ElectricalMeasurement.attributes.RMSCurrent.ID] = rms_current_handler
       },
       [SimpleMetering.ID] = {
-        [SimpleMetering.attributes.InstantaneousDemand.ID] = instantaneous_demand_handler
-      },
-      [Metering.ID] = {
-        [Metering.attributes.CumulativeEnergy.ID] = metering_handler
+        [SimpleMetering.attributes.InstantaneousDemand.ID] = instantaneous_demand_handler,
+        [SimpleMetering.attributes.CurrentSummationDelivered.ID] = metering_handler
+
       },
       [TemperatureMeasurement.ID] = {
         [TemperatureMeasurement.attributes.MeasuredValue.ID] = temperature_handler
