@@ -8,8 +8,8 @@ components:
         version: 1
       - id: voltageMeasurement
         version: 1
-      # - id: currentMeter
-      #   version: 1
+      - id: currentMeasurement
+        version: 1
       - id: energyMeter
         version: 1
       - id: temperatureMeasurement
