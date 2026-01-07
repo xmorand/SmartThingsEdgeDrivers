@@ -10,9 +10,9 @@ local clusters = require "st.zigbee.zcl.clusters"
 local log = require "log"
 
 -- Sinopé manufacturer cluster and attributes
-local SINOPE_SWITCH_CLUSTER = 0xFF01
-local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE = 0x0052
-local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE = 0x0053
+local SINOPE_SWITCH_CLUSTER               = 0xFF01
+local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE   = 0x0052
+local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE  = 0x0053
 local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)[web:45]
 local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)[web:45]
 local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)[web:45]
@@ -24,12 +24,22 @@ local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×1
 local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)[web:45]
 
 -- Standard Zigbee clusters
-local SimpleMetering        = clusters.SimpleMetering -- 0x0702
-local OnOff                 = clusters.OnOff          -- 0x0006
-local TemperatureMeasurement              = clusters.TemperatureMeasurement -- 0x0402
-local IASZone               = clusters.IASZone        -- 0x0500
-local ElectricalMeasurement = clusters.ElectricalMeasurement   -- 0x0B04
-local Thermostat            = clusters.Thermostat
+local SimpleMetering          = clusters.SimpleMetering -- 0x0702
+local OnOff                   = clusters.OnOff          -- 0x0006
+local TemperatureMeasurement  = clusters.TemperatureMeasurement -- 0x0402
+local IASZone                 = clusters.IASZone        -- 0x0500
+local ElectricalMeasurement   = clusters.ElectricalMeasurement   -- 0x0B04
+local Thermostat              = clusters.Thermostat
+
+--Water mon temp config
+-- Cluster: 0xff01
+-- Attribute: 0x0076
+-- Data type: t.uint8_t
+-- Function: drConfigWaterTempMin
+-- Values: 45 or 0
+
+
+
 
 -- Leak state from IAS Zone 0x0500/0x0002[web:45]
 local function water_sensor_handler(driver, device, value, zb_rx)
@@ -44,39 +54,36 @@ local function water_sensor_handler(driver, device, value, zb_rx)
   end
 end
 
--- -- Active power from 0x0B04/0x050B[web:45]
--- local function active_power_meter_handler(driver, device, value, zb_rx)
---   log.info("========================================")
---   log.info("RM3500ZB POWERMETER HANDLER CALLED")
---   local raw_value = value.value
---   local divisor = device:get_field(constants.ELECTRICAL_MEASUREMENT_DIVISOR_KEY) or 10
+-- Active power from 0x0B04/0x050B[web:45]
+local function active_power_meter_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("RM3500ZB POWERMETER HANDLER CALLED")
+  local raw_value = value.value
+  raw_value = raw_value / 10
 
---   raw_value = raw_value / divisor
-
---   device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
--- end
+  device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
+end
 
 local function instantaneous_demand_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB INSTANTMETER HANDLER CALLED")
   local raw_value = value.value
-  local divisor = device:get_field(constants.SIMPLE_METERING_DIVISOR_KEY) or 10
-
-  raw_value = raw_value / divisor
+  raw_value = raw_value / 10
 
   device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
 end
+
 local function rms_voltage_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB RMSVOLTS HANDLER CALLED")
   device:emit_event(capabilities.voltageMeasurement.voltage({value = value.value, unit = "V"}))
 end
 
--- local function rms_current_handler(driver, device, value, zb_rx)
---   log.info("========================================")
---   log.info("RM3500ZB RMS CURRENT HANDLER CALLED")
---   device:emit_event(capabilities.currentMeter.current({value = value.value, unit = "A"}))
--- end
+local function rms_current_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("RM3500ZB RMS CURRENT HANDLER CALLED")
+  device:emit_event(capabilities.currentMeasurement.current({value = value.value, unit = "A"}))
+end
 
 local function metering_handler(driver, device, value, zb_rx)
   log.info("========================================")
@@ -90,7 +97,7 @@ local function temperature_handler(driver, device, value, zb_rx)
   log.info("RM3500ZB TEMPERATURE HANDLER CALLED")
   log.info("========================================")
   local temp_c = value.value /100
-  log.warn(string.format("RM3500ZB: Temperature below 0°C (%.2f°C) - ignoring", temp_c))
+  -- the RM3500ZB may report 2 types of values with one in the -300 range. This only sends the value if it is over -100 deg C
   if temp_c > -100 then
     device:emit_event(capabilities.temperatureMeasurement.temperature({value = value.value / 100, unit = "C"}))
     return
@@ -181,6 +188,7 @@ local function do_refresh(driver, device)
   device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
   device:send(SimpleMetering.attributes.InstantaneousDemand:read(device))
   device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
+  device:send(ElectricalMeasurement.attributes.ActivePower:read(device))
   device:send(ElectricalMeasurement.attributes.RMSVoltage:read(device))
   device:send(ElectricalMeasurement.attributes.RMSCurrent:read(device))
   device:send(IASZone.attributes.ZoneStatus:read(device))
