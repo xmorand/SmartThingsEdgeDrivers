@@ -8,20 +8,21 @@ local ZigbeeDriver = require "st.zigbee"
 local defaults = require "st.zigbee.defaults"
 local clusters = require "st.zigbee.zcl.clusters"
 local log = require "log"
+local zb_utils = require "st.zigbee.utils"
 
 -- Sinopé manufacturer cluster and attributes
 local SINOPE_SWITCH_CLUSTER               = 0xFF01
 local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE   = 0x0052
 local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE  = 0x0053
-local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)[web:45]
-local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)[web:45]
-local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)[web:45]
-local SINOPE_DR_MIN_WATER_TEMP_TIME_ATTR  = 0x0077  -- drConfigWaterTempTime[web:45]
-local SINOPE_TIMER_ATTR                   = 0x00A0  -- Timer seconds[web:45]
-local SINOPE_TIMER_COUNTDOWN_ATTR         = 0x00A1  -- Timer_countDown[web:45]
-local SINOPE_MIN_MEASURED_TEMP_ATTR       = 0x007C  -- min_measured_temp (°C×100)[web:45]
-local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×100)[web:45]
-local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)[web:45]
+local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)
+local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)
+local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)
+local SINOPE_DR_MIN_WATER_TEMP_TIME_ATTR  = 0x0077  -- drConfigWaterTempTime
+local SINOPE_TIMER_ATTR                   = 0x00A0  -- Timer seconds
+local SINOPE_TIMER_COUNTDOWN_ATTR         = 0x00A1  -- Timer_countDown
+local SINOPE_MIN_MEASURED_TEMP_ATTR       = 0x007C  -- min_measured_temp (°C×100)
+local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×100)
+local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)
 
 -- Standard Zigbee clusters
 local SimpleMetering          = clusters.SimpleMetering -- 0x0702
@@ -38,10 +39,11 @@ local Thermostat              = clusters.Thermostat
 -- Function: drConfigWaterTempMin
 -- Values: 45 or 0
 
+-- ============================================================================
+-- STANDARD ATTRIBUTE HANDLERS
+-- ============================================================================
 
-
-
--- Leak state from IAS Zone 0x0500/0x0002[web:45]
+-- Leak state from IAS Zone 0x0500/0x0002
 local function water_sensor_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB LEAK HANDLER CALLED")
@@ -54,23 +56,19 @@ local function water_sensor_handler(driver, device, value, zb_rx)
   end
 end
 
--- Active power from 0x0B04/0x050B[web:45]
+-- Active power from 0x0B04/0x050B
 local function active_power_meter_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB POWERMETER HANDLER CALLED")
-  local raw_value = value.value
-  raw_value = raw_value / 10
 
-  device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
+  device:emit_event(capabilities.powerMeter.power({value = value.value, unit = "W"}))
 end
 
 local function instantaneous_demand_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB INSTANTMETER HANDLER CALLED")
-  local raw_value = value.value
-  raw_value = raw_value / 10
 
-  device:emit_event(capabilities.powerMeter.power({value = raw_value, unit = "W"}))
+  device:emit_event(capabilities.powerMeter.power({value = value.value, unit = "W"}))
 end
 
 local function rms_voltage_handler(driver, device, value, zb_rx)
@@ -82,7 +80,10 @@ end
 local function rms_current_handler(driver, device, value, zb_rx)
   log.info("========================================")
   log.info("RM3500ZB RMS CURRENT HANDLER CALLED")
-  device:emit_event(capabilities.currentMeasurement.current({value = value.value, unit = "A"}))
+  local raw_value = value.value
+  raw_value = raw_value / 1000
+
+  device:emit_event(capabilities.currentMeasurement.current({value = raw_value, unit = "A"}))
 end
 
 local function metering_handler(driver, device, value, zb_rx)
@@ -102,6 +103,143 @@ local function temperature_handler(driver, device, value, zb_rx)
     device:emit_event(capabilities.temperatureMeasurement.temperature({value = value.value / 100, unit = "C"}))
     return
   end
+end
+
+-- ============================================================================
+-- SINOPE MANUFACTURER ATTRIBUTE HANDLERS
+-- ============================================================================
+
+-- Handler for Low Temperature Protection (0xFF01/0x0076)
+local function sinope_low_temp_protection_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("RM3500ZB LOW TEMP PROTECTION HANDLER CALLED")
+  local temp_value = value.value
+  log.info(string.format("Low temp protection value from device: %d°C", temp_value))
+  
+  -- Store in field
+  device:set_field("lowTempProtection", temp_value, {persist = true})
+end
+
+-- Handler for Tank Size (0xFF01/0x0060)
+local function sinope_tank_size_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("RM3500ZB TANK SIZE HANDLER CALLED")
+  local tank_size = value.value
+  log.info(string.format("Tank size from device: %d Gallons", tank_size))
+  
+  -- Store in field
+  device:set_field("tankSize", tank_size, {persist = true})
+end
+
+-- Handler for Min Measured Temp (0xFF01/0x007C) - READ ONLY
+local function sinope_min_measured_temp_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("RM3500ZB MIN MEASURED TEMP HANDLER CALLED")
+  local temp_value = value.value / 100  -- Convert from °C×100
+  log.info(string.format("Min measured temp from device: %.2f°C", temp_value))
+  
+  -- Store in field
+  device:set_field("minMeasuredTemp", temp_value, {persist = true})
+
+  -- -- Update the preference value (this makes it show in settings)
+  -- device:try_update_metadata({
+  --   preferences = {
+  --     minMeasuredTemp = temp_value
+  --   }
+  -- })
+end
+
+
+local function sinope_max_measured_temp_handler(driver, device, value, zb_rx)
+  local temp_value = value.value / 100
+  log.info(string.format("Max measured temp from device: %.2f°C", temp_value))
+  -- Store in field
+  device:set_field("maxMeasuredTemp", temp_value, {persist = true})
+
+  -- -- Update the preference value (this makes it show in settings)
+  -- device:try_update_metadata({
+  --   preferences = {
+  --     maxMeasuredTemp = temp_value
+  --   }
+  -- })
+end
+
+
+-- Handler for Max Measured Temp (0xFF01/0x007D) - READ ONLY
+local function sinope_max_measured_temp_handler(driver, device, value, zb_rx)
+  log.info("========================================")
+  log.info("RM3500ZB MAX MEASURED TEMP HANDLER CALLED")
+  local temp_value = value.value / 100  -- Convert from °C×100
+  log.info(string.format("Max measured temp from device: %.2f°C", temp_value))
+  
+  -- Store in field
+  device:set_field("maxMeasuredTemp", temp_value, {persist = true})
+end
+
+-- ============================================================================
+-- REFRESH SETTINGS FUNCTION
+-- ============================================================================
+
+local function refresh_settings(device)
+  log.info("========================================")
+  log.info("RM3500ZB REFRESHING SETTINGS")
+  log.info("========================================")
+  
+  -- Read Low Temperature Protection setting
+  device:send(cluster_base.read_manufacturer_specific_attribute(
+    device,
+    SINOPE_SWITCH_CLUSTER,
+    SINOPE_DR_MIN_WATER_TEMP_ATTR,
+    0x119C
+  ))
+  
+  -- Read Tank Size setting (Connected Load)
+  device:send(cluster_base.read_manufacturer_specific_attribute(
+    device,
+    SINOPE_SWITCH_CLUSTER,
+    SINOPE_CONNECTED_LOAD_ATTR,
+    0x119C
+  ))
+  
+  -- Read Min Measured Temp
+  device:send(cluster_base.read_manufacturer_specific_attribute(
+    device,
+    SINOPE_SWITCH_CLUSTER,
+    SINOPE_MIN_MEASURED_TEMP_ATTR,
+    0x119C
+  ))
+  
+  -- Read Max Measured Temp
+  device:send(cluster_base.read_manufacturer_specific_attribute(
+    device,
+    SINOPE_SWITCH_CLUSTER,
+    SINOPE_MAX_MEASURED_TEMP_ATTR,
+    0x119C
+  ))
+end
+
+-- ============================================================================
+-- REFRESH ALL VALUES + SETTINGS
+-- ============================================================================
+
+
+local function do_refresh(driver, device)
+  log.info("========================================")
+  log.info("RM3500ZB DOREFRESH HANDLER CALLED")
+  log.info("========================================")
+  
+  -- Refresh all values
+  device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
+  device:send(SimpleMetering.attributes.InstantaneousDemand:read(device))
+  device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
+  device:send(ElectricalMeasurement.attributes.ActivePower:read(device))
+  device:send(ElectricalMeasurement.attributes.RMSVoltage:read(device))
+  device:send(ElectricalMeasurement.attributes.RMSCurrent:read(device))
+  device:send(IASZone.attributes.ZoneStatus:read(device))
+  device:send(OnOff.attributes.OnOff:read(device))
+  
+  -- Refresh settings values
+  refresh_settings(device) 
 end
 
 -- ============================================================================
@@ -169,31 +307,105 @@ local function configure_device(driver, device)
     1      -- reportable change: any change
   ))
 
-  -- Refresh all values after configuration
-  device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
-  device:send(SimpleMetering.attributes.InstantaneousDemand:read(device))
-  device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
-  device:send(ElectricalMeasurement.attributes.RMSVoltage:read(device))
-  device:send(ElectricalMeasurement.attributes.RMSCurrent:read(device))
-  device:send(IASZone.attributes.ZoneStatus:read(device))
-  device:send(OnOff.attributes.OnOff:read(device))
+
+  -- Refresh all values + settings
+  do_refresh(driver, device)
+
+
 end
 
-local function do_refresh(driver, device)
+
+
+local function log_all_unhandled_messages(driver, device, zb_rx)
+  log.debug("===== INCOMING ZIGBEE MESSAGE =====")
+  log.debug(zb_rx:pretty_print(zb_utils.MULTI_LINE_FORMAT_CONFIG))
+  log.debug("===================================")
+end
+
+
+-- ============================================================================
+-- PREFERENCES CHANGE HANDLER
+-- ============================================================================
+
+local function info_changed_handler(driver, device, event, args)
   log.info("========================================")
-  log.info("RM3500ZB DOREFRESH HANDLER CALLED")
+  log.info("RM3500ZB INFO_CHANGED HANDLER CALLED")
   log.info("========================================")
   
-  -- Refresh all values
-  device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
-  device:send(SimpleMetering.attributes.InstantaneousDemand:read(device))
-  device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
-  device:send(ElectricalMeasurement.attributes.ActivePower:read(device))
-  device:send(ElectricalMeasurement.attributes.RMSVoltage:read(device))
-  device:send(ElectricalMeasurement.attributes.RMSCurrent:read(device))
-  device:send(IASZone.attributes.ZoneStatus:read(device))
-  device:send(OnOff.attributes.OnOff:read(device))
+  -- -- Check if this is a settings page open (no old preferences)
+  if not args.old_st_store.preferences then
+    log.info("Settings page opened - refreshing values")
+    refresh_settings(device)
+    return
+  end
+
+  -- Handle Low Temperature Protection change
+  if args.old_st_store.preferences.lowTempProtection ~= device.preferences.lowTempProtection then
+    local new_value = tonumber(device.preferences.lowTempProtection)
+    log.info(string.format("Low temp protection changed to: %d°C", new_value))
+    
+    -- Write to device
+    device:send(cluster_base.write_manufacturer_specific_attribute(
+      device,
+      SINOPE_SWITCH_CLUSTER,
+      SINOPE_DR_MIN_WATER_TEMP_ATTR,
+      0x119C,
+      data_types.Uint8,
+      new_value
+    ))
+    
+    -- Read back after 2 seconds to verify
+    device.thread:call_with_delay(2, function()
+      log.info("Reading back lowTempProtection after write...")
+      device:send(cluster_base.read_manufacturer_specific_attribute(
+        device,
+        SINOPE_SWITCH_CLUSTER,
+        SINOPE_DR_MIN_WATER_TEMP_ATTR,
+        0x119C
+      ))
+    end)
+  end
+  
+  -- Handle Tank Size change
+  if args.old_st_store.preferences.tankSize ~= device.preferences.tankSize then
+    local new_value = device.preferences.tankSize
+    log.info(string.format("Tank size changed to: %d Gallons", new_value))
+    
+    -- Write to device
+    device:send(cluster_base.write_manufacturer_specific_attribute(
+      device,
+      SINOPE_SWITCH_CLUSTER,
+      SINOPE_CONNECTED_LOAD_ATTR,
+      0x119C,
+      data_types.Uint16,
+      new_value
+    ))
+    
+    -- Read back after 2 seconds to verify
+    device.thread:call_with_delay(2, function()
+      log.info("Reading back tankSize after write...")
+      device:send(cluster_base.read_manufacturer_specific_attribute(
+        device,
+        SINOPE_SWITCH_CLUSTER,
+        SINOPE_CONNECTED_LOAD_ATTR,
+        0x119C
+      ))
+    end)
+  end
 end
+
+
+
+-- ============================================================================
+-- THINGS LEFT TO DO
+-- Refresh setting Value after setting it
+-- Add Min + Max measured values to preferences
+-- Add ConnectedLoad to Preferences ?
+-- Move 
+-- ============================================================================
+
+
+
 
 -- ============================================================================
 -- DRIVER DEFINITION
@@ -208,8 +420,11 @@ local sinope_rm3500zb = {
   },
   lifecycle_handlers = {
     init = configure_device,  -- Called when device is added/configured
+    doConfigure = configure_device,
+    infoChanged = info_changed_handler,
   },
-  zigbee_handlers = {
+  zigbee_handlers = {  
+    fallback = log_all_unhandled_messages,  
     attr = {
       [ElectricalMeasurement.ID] = {
         [ElectricalMeasurement.attributes.ActivePower.ID] = active_power_meter_handler,
@@ -225,6 +440,11 @@ local sinope_rm3500zb = {
       },
       [IASZone.ID] = {
         [IASZone.attributes.ZoneStatus.ID] = water_sensor_handler
+      },
+      [SINOPE_SWITCH_CLUSTER] = {
+        [SINOPE_DR_MIN_WATER_TEMP_ATTR] = sinope_low_temp_protection_handler,
+        [SINOPE_MIN_MEASURED_TEMP_ATTR] = sinope_min_measured_temp_handler,
+        [SINOPE_MAX_MEASURED_TEMP_ATTR] = sinope_max_measured_temp_handler,
       },
     },
   },
