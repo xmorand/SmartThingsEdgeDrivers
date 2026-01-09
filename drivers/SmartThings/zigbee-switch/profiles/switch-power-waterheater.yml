@@ -45,25 +45,25 @@ preferences:
         55: "55 °C"
       default: 45
 
-  - title: "Min Measured Temperature"
-    name: minMeasuredTemp
-    description: "Lowest temperature recorded (°C) - Read Only"
-    required: false
-    preferenceType: number
-    definition:
-      minimum: -50
-      maximum: 100
-      default: 0
+  # - title: "Min Measured Temperature"
+  #   name: "minMeasuredTempp"
+  #   description: "Lowest temperature recorded (°C) - Read Only"
+  #   required: false
+  #   preferenceType: number
+  #   definition:
+  #     minimum: -50
+  #     maximum: 100
+  #     default: 0
       
-  - title: "Max Measured Temperature"
-    name: maxMeasuredTemp
-    description: "Highest temperature recorded (°C) - Read Only"
-    required: false
-    preferenceType: number
-    definition:
-      minimum: -50
-      maximum: 100
-      default: 0
+  # - title: "Max Measured Temperature"
+  #   name: "maxMeasuredTempp"
+  #   description: "Highest temperature recorded (°C) - Read Only"
+  #   required: false
+  #   preferenceType: number
+  #   definition:
+  #     minimum: -50
+  #     maximum: 100
+  #     default: 0
   
   
   
