@@ -13,6 +13,10 @@ local mock_device_onoff = test.mock_device.build_test_matter_device({
     vendor_id = 0x0000,
     product_id = 0x0000,
   },
+  matter_version = {
+    hardware = 1,
+    software = 1,
+  },
   endpoints = {
     {
       endpoint_id = 0,
@@ -603,7 +607,8 @@ local function test_init_parent_child_different_types()
     clusters.ColorControl.attributes.CurrentHue,
     clusters.ColorControl.attributes.CurrentSaturation,
     clusters.ColorControl.attributes.CurrentX,
-    clusters.ColorControl.attributes.CurrentY
+    clusters.ColorControl.attributes.CurrentY,
+    clusters.ColorControl.attributes.ColorMode,
   }
   local subscribe_request = cluster_subscribe_list[1]:subscribe(mock_device_parent_child_different_types)
   for i, cluster in ipairs(cluster_subscribe_list) do

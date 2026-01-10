@@ -1,3 +1,6 @@
+-- Copyright 2025 SmartThings, Inc.
+-- Licensed under the Apache License, Version 2.0
+
 local capabilities = require "st.capabilities"
 local zcl_commands = require "st.zigbee.zcl.global_commands"
 local clusters = require "st.zigbee.zcl.clusters"
@@ -34,14 +37,6 @@ local CONFIGURATIONS = {
   }
 }
 
-local is_aqara_products = function(opts, driver, device)
-  for _, fingerprint in ipairs(FINGERPRINTS) do
-    if device:get_manufacturer() == fingerprint.mfr and device:get_model() == fingerprint.model then
-      return true
-    end
-  end
-  return false
-end
 
 local function motion_illuminance_attr_handler(driver, device, value, zb_rx)
   -- The low 16 bits for Illuminance
@@ -124,10 +119,8 @@ local aqara_motion_handler = {
       }
     }
   },
-  sub_drivers = {
-    require("aqara.high-precision-motion")
-  },
-  can_handle = is_aqara_products
+  sub_drivers = require("aqara.sub_drivers"),
+  can_handle = require("aqara.can_handle"),
 }
 
 return aqara_motion_handler
