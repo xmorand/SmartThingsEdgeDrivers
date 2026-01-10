@@ -1,28 +1,28 @@
 -- Copyright 2025 SmartThings, Inc.
 -- Licensed under the Apache License, Version 2.0
 
-local cluster_base = require "st.zigbee.cluster_base"
-local data_types = require "st.zigbee.data_types"
+-- local cluster_base = require "st.zigbee.cluster_base"
+-- local data_types = require "st.zigbee.data_types"
 local capabilities = require "st.capabilities"
-local ZigbeeDriver = require "st.zigbee"
-local defaults = require "st.zigbee.defaults"
+-- local ZigbeeDriver = require "st.zigbee"
+-- local defaults = require "st.zigbee.defaults"
 local clusters = require "st.zigbee.zcl.clusters"
 -- local log = require "log"
 local zb_utils = require "st.zigbee.utils"
 
 -- Sinopé manufacturer cluster and attributes
-local SINOPE_SWITCH_CLUSTER               = 0xFF01
-local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE   = 0x0052
-local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE  = 0x0053
-local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)
-local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)
-local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)
-local SINOPE_DR_MIN_WATER_TEMP_TIME_ATTR  = 0x0077  -- drConfigWaterTempTime
-local SINOPE_TIMER_ATTR                   = 0x00A0  -- Timer seconds
-local SINOPE_TIMER_COUNTDOWN_ATTR         = 0x00A1  -- Timer_countDown
-local SINOPE_MIN_MEASURED_TEMP_ATTR       = 0x007C  -- min_measured_temp (°C×100)
-local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×100)
-local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)
+-- local SINOPE_SWITCH_CLUSTER               = 0xFF01
+-- local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE   = 0x0052
+-- local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE  = 0x0053
+-- local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)
+-- local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)
+-- local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)
+-- local SINOPE_DR_MIN_WATER_TEMP_TIME_ATTR  = 0x0077  -- drConfigWaterTempTime
+-- local SINOPE_TIMER_ATTR                   = 0x00A0  -- Timer seconds
+-- local SINOPE_TIMER_COUNTDOWN_ATTR         = 0x00A1  -- Timer_countDown
+-- local SINOPE_MIN_MEASURED_TEMP_ATTR       = 0x007C  -- min_measured_temp (°C×100)
+-- local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×100)
+-- local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)
 
 -- Standard Zigbee clusters
 local SimpleMetering          = clusters.SimpleMetering -- 0x0702
@@ -30,8 +30,8 @@ local OnOff                   = clusters.OnOff          -- 0x0006
 local TemperatureMeasurement  = clusters.TemperatureMeasurement -- 0x0402
 local IASZone                 = clusters.IASZone        -- 0x0500
 local ElectricalMeasurement   = clusters.ElectricalMeasurement   -- 0x0B04
-local Thermostat              = clusters.Thermostat
-
+-- local Thermostat              = clusters.Thermostat
+  
 
 -- ============================================================================
 -- STANDARD ATTRIBUTE HANDLERS
