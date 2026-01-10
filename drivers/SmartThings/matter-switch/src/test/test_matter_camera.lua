@@ -13,6 +13,7 @@ local CAMERA_EP, FLOODLIGHT_EP, CHIME_EP, DOORBELL_EP = 1, 2, 3, 4
 local mock_device = test.mock_device.build_test_matter_device({
   profile = t_utils.get_profile_definition("camera.yml"),
   manufacturer_info = {vendor_id = 0x0000, product_id = 0x0000},
+  matter_version = {hardware = 1, software = 1},
   endpoints = {
     {
       endpoint_id = 0,
@@ -48,6 +49,10 @@ local mock_device = test.mock_device.build_test_matter_device({
             clusters.CameraAvSettingsUserLevelManagement.types.Feature.MECHANICAL_TILT |
             clusters.CameraAvSettingsUserLevelManagement.types.Feature.MECHANICAL_ZOOM |
             clusters.CameraAvSettingsUserLevelManagement.types.Feature.MECHANICAL_PRESETS,
+          cluster_type = "SERVER"
+        },
+        {
+          cluster_id = clusters.PushAvStreamTransport.ID,
           cluster_type = "SERVER"
         },
         {
@@ -311,6 +316,7 @@ local function update_device_profile()
     clusters.ColorControl.attributes.CurrentSaturation,
     clusters.ColorControl.attributes.CurrentX,
     clusters.ColorControl.attributes.CurrentY,
+    clusters.ColorControl.attributes.ColorMode,
     clusters.OccupancySensing.attributes.Occupancy,
     clusters.Switch.server.events.InitialPress,
     clusters.Switch.server.events.LongPress,
