@@ -1,8 +1,8 @@
 -- Copyright 2025 SmartThings, Inc.
 -- Licensed under the Apache License, Version 2.0
 
--- local cluster_base = require "st.zigbee.cluster_base"
--- local data_types = require "st.zigbee.data_types"
+local cluster_base = require "st.zigbee.cluster_base"
+local data_types = require "st.zigbee.data_types"
 local capabilities = require "st.capabilities"
 -- local ZigbeeDriver = require "st.zigbee"
 -- local defaults = require "st.zigbee.defaults"
@@ -11,18 +11,18 @@ local clusters = require "st.zigbee.zcl.clusters"
 local zb_utils = require "st.zigbee.utils"
 
 -- Sinopé manufacturer cluster and attributes
--- local SINOPE_SWITCH_CLUSTER               = 0xFF01
--- local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE   = 0x0052
--- local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE  = 0x0053
--- local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)
--- local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)
--- local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)
--- local SINOPE_DR_MIN_WATER_TEMP_TIME_ATTR  = 0x0077  -- drConfigWaterTempTime
--- local SINOPE_TIMER_ATTR                   = 0x00A0  -- Timer seconds
--- local SINOPE_TIMER_COUNTDOWN_ATTR         = 0x00A1  -- Timer_countDown
--- local SINOPE_MIN_MEASURED_TEMP_ATTR       = 0x007C  -- min_measured_temp (°C×100)
--- local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×100)
--- local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)
+local SINOPE_SWITCH_CLUSTER               = 0xFF01
+local SINOPE_MAX_INTENSITY_ON_ATTRIBUTE   = 0x0052
+local SINOPE_MAX_INTENSITY_OFF_ATTRIBUTE  = 0x0053
+local SINOPE_CONNECTED_LOAD_ATTR          = 0x0060  -- ConnectedLoad (W)
+local SINOPE_CURRENT_LOAD_ATTR            = 0x0070  -- CurrentLoad (W-ish bitmap)
+local SINOPE_DR_MIN_WATER_TEMP_ATTR       = 0x0076  -- drConfigWaterTempMin (°C)
+local SINOPE_DR_MIN_WATER_TEMP_TIME_ATTR  = 0x0077  -- drConfigWaterTempTime
+local SINOPE_TIMER_ATTR                   = 0x00A0  -- Timer seconds
+local SINOPE_TIMER_COUNTDOWN_ATTR         = 0x00A1  -- Timer_countDown
+local SINOPE_MIN_MEASURED_TEMP_ATTR       = 0x007C  -- min_measured_temp (°C×100)
+local SINOPE_MAX_MEASURED_TEMP_ATTR       = 0x007D  -- max_measured_temp (°C×100)
+local SINOPE_ENERGY_INTERNAL_ATTR         = 0x0090  -- currentSummationDelivered (internal)
 
 -- Standard Zigbee clusters
 local SimpleMetering          = clusters.SimpleMetering -- 0x0702
@@ -31,7 +31,7 @@ local TemperatureMeasurement  = clusters.TemperatureMeasurement -- 0x0402
 local IASZone                 = clusters.IASZone        -- 0x0500
 local ElectricalMeasurement   = clusters.ElectricalMeasurement   -- 0x0B04
 -- local Thermostat              = clusters.Thermostat
-  
+
 
 -- ============================================================================
 -- STANDARD ATTRIBUTE HANDLERS
@@ -56,14 +56,15 @@ local function active_power_meter_handler(driver, device, value, zb_rx)
   -- log.info("RM3500ZB POWERMETER HANDLER CALLED")
 
   device:emit_event(capabilities.powerMeter.power({value = value.value, unit = "W"}))
+  device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
 end
 
-local function instantaneous_demand_handler(driver, device, value, zb_rx)
-  -- log.info("========================================")
-  -- log.info("RM3500ZB INSTANTMETER HANDLER CALLED")
+-- local function instantaneous_demand_handler(driver, device, value, zb_rx)
+--   log.info("========================================")
+--   log.info("RM3500ZB INSTANTMETER HANDLER CALLED")
 
-  device:emit_event(capabilities.powerMeter.power({value = value.value, unit = "W"}))
-end
+--   device:emit_event(capabilities.powerMeter.power({value = value.value, unit = "W"}))
+-- end
 
 local function rms_voltage_handler(driver, device, value, zb_rx)
   -- log.info("========================================")
@@ -198,6 +199,27 @@ local function refresh_settings(device)
 end
 
 -- ============================================================================
+-- TEMPERATURE POLLING
+-- ============================================================================
+
+local POLL_TIMER_FIELD = "poll_temperature_timer"
+local function schedule_temperature_poll(device)
+  -- 1. Cancel existing timer if any
+  local existing = device:get_field(POLL_TIMER_FIELD)
+  if existing then
+    device.thread:cancel_timer(existing)  -- cancel by handle
+  end
+
+  -- 2. Create new timer
+  local handle = device:call_with_delay(600, function(d)
+    device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
+  end)
+
+  -- 3. Store handle for next time
+  device:set_field(POLL_TIMER_FIELD, handle)
+end
+
+-- ============================================================================
 -- REFRESH ALL VALUES + SETTINGS
 -- ============================================================================
 
@@ -209,7 +231,7 @@ local function do_refresh(driver, device)
   
   -- Refresh all values
   device:send(TemperatureMeasurement.attributes.MeasuredValue:read(device))
-  device:send(SimpleMetering.attributes.InstantaneousDemand:read(device))
+  -- device:send(SimpleMetering.attributes.InstantaneousDemand:read(device))
   device:send(SimpleMetering.attributes.CurrentSummationDelivered:read(device))
   device:send(ElectricalMeasurement.attributes.ActivePower:read(device))
   device:send(ElectricalMeasurement.attributes.RMSVoltage:read(device))
@@ -235,23 +257,31 @@ local function configure_device(driver, device)
     device,
     60,    -- min_report_interval (seconds)
     900,   -- max_report_interval (seconds)
-    50     -- reportable_change (0.5°C, in 0.01°C units)
+    1     -- reportable_change (0.5°C, in 0.01°C units)
   ))
 
-  -- Configure Power reporting (every 10s to 60s, on 5W change)
-  device:send(SimpleMetering.attributes.InstantaneousDemand:configure_reporting(
-    device,
-    10,    -- min interval: 10 seconds
-    900,    -- max interval: 15 minute
-    50     -- reportable change: 5W (in 0.1W units)
-  ))
+  -- -- Configure Power reporting (every 10s to 60s, on 5W change)
+  -- device:send(SimpleMetering.attributes.InstantaneousDemand:configure_reporting(
+  --   device,
+  --   10,    -- min interval: 10 seconds
+  --   900,    -- max interval: 15 minute
+  --   1     -- reportable change: 1W (in 0.1W units)
+  -- ))
 
   -- Configure Energy reporting (every 5min to 30min, on 0.01 kWh change)
   device:send(SimpleMetering.attributes.CurrentSummationDelivered:configure_reporting(
     device,
-    300,   -- min interval: 5 minutes
-    1800,  -- max interval: 30 minutes
+    10,   -- min interval: 10 sec
+    900,  -- max interval: 15 minutes
     10     -- reportable change: 0.01 kWh (in 0.001 kWh units)
+  ))
+
+  -- Configure Power reporting (every 10s to 60s, on 5W change)
+  device:send(ElectricalMeasurement.attributes.ActivePower:configure_reporting(
+    device,
+    10,    -- min interval: 10 seconds
+    900,    -- max interval: 15 minute
+    1     -- reportable change: 1W (in 0.1W units)
   ))
 
   -- Configure Voltage reporting (every 60s to 5min, on 1V change)
@@ -286,6 +316,9 @@ local function configure_device(driver, device)
     1      -- reportable change: any change
   ))
 
+
+  -- Start (or restart) temperature polling every 600s
+  schedule_temperature_poll(device)
 
   -- Refresh all values + settings
   do_refresh(driver, device)
@@ -326,7 +359,7 @@ local function info_changed_handler(driver, device, event, args)
     
     -- Read back after 2 seconds to verify
     device.thread:call_with_delay(2, function()
-      log.info("Reading back lowTempProtection after write...")
+      -- log.info("Reading back lowTempProtection after write...")
       device:send(cluster_base.read_manufacturer_specific_attribute(
         device,
         SINOPE_SWITCH_CLUSTER,
@@ -388,7 +421,7 @@ local sinope_rm3500zb = {
         [ElectricalMeasurement.attributes.RMSCurrent.ID] = rms_current_handler
       },
       [SimpleMetering.ID] = {
-        [SimpleMetering.attributes.InstantaneousDemand.ID] = instantaneous_demand_handler,
+        -- [SimpleMetering.attributes.InstantaneousDemand.ID] = instantaneous_demand_handler,
         [SimpleMetering.attributes.CurrentSummationDelivered.ID] = metering_handler
       },
       [TemperatureMeasurement.ID] = {
