@@ -930,6 +930,11 @@ zigbeeManufacturer:
     manufacturer: IKEA of Sweden
     model: "TRADFRI control outlet"
     deviceProfileName: basic-switch
+  - id: IKEA/INSPELNING Smart plug
+    deviceLabel: INSPELNING Smart plug
+    manufacturer: IKEA of Sweden
+    model: "INSPELNING Smart plug"
+    deviceProfileName: switch-power-energy  
   - id: MEGAMAN/BSZTM005
     deviceLabel: INGENIUM Switch
     manufacturer: MEGAMAN
