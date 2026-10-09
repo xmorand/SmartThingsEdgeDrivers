@@ -14,5 +14,6 @@ return {
   { mfr = "SALUS", model = "SX885ZB" },
   { mfr = "AduroSmart Eria", model = "AD-SmartPlug3001" },
   { mfr = "AduroSmart Eria", model = "BPU3" },
-  { mfr = "AduroSmart Eria", model = "BDP3001" }
+  { mfr = "AduroSmart Eria", model = "BDP3001" },
+  { mfr = "IKEA of Sweden", model = "INSPELNING Smart plug" }
 }
