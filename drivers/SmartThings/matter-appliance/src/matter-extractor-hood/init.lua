@@ -1,6 +1,16 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2025 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local capabilities = require "st.capabilities"
 local clusters = require "st.matter.clusters"
@@ -67,6 +77,17 @@ local function do_configure(driver, device)
 end
 
 -- Matter Handlers --
+local function is_matter_extractor_hood(opts, driver, device)
+  for _, ep in ipairs(device.endpoints) do
+    for _, dt in ipairs(ep.device_types) do
+      if dt.device_type_id == EXTRACTOR_HOOD_DEVICE_TYPE_ID then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 local function fan_mode_handler(driver, device, ib, response)
   if ib.data.value == clusters.FanControl.attributes.FanMode.OFF then
     device:emit_event_for_endpoint(ib.endpoint_id, capabilities.fanMode.fanMode.off())
@@ -288,7 +309,7 @@ local matter_extractor_hood_handler = {
       [capabilities.windMode.commands.setWindMode.NAME] = set_wind_mode
     }
   },
-  can_handle = require("matter-extractor-hood.can_handle"),
+  can_handle = is_matter_extractor_hood
 }
 
 return matter_extractor_hood_handler

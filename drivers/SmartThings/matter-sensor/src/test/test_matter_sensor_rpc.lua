@@ -69,11 +69,7 @@ test.register_message_test(
         clusters.TemperatureMeasurement.attributes.MaxMeasuredValue:build_test_report_data(mock_device, 1, 4000)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
 test.run_registered_tests()
-

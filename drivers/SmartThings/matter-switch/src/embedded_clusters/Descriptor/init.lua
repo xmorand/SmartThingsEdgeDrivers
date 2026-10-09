@@ -3,7 +3,6 @@
 
 local cluster_base = require "st.matter.cluster_base"
 local DescriptorServerAttributes = require "embedded_clusters.Descriptor.server.attributes"
-local DescriptorTypes = require "embedded_clusters.Descriptor.types"
 
 local Descriptor = {}
 
@@ -12,11 +11,9 @@ Descriptor.NAME = "Descriptor"
 Descriptor.server = {}
 Descriptor.client = {}
 Descriptor.server.attributes = DescriptorServerAttributes:set_parent_cluster(Descriptor)
-Descriptor.types = DescriptorTypes
 
 function Descriptor:get_attribute_by_id(attr_id)
   local attr_id_map = {
-    [0x0000] = "DeviceTypeList",
     [0x0003] = "PartsList",
   }
   local attr_name = attr_id_map[attr_id]
@@ -36,7 +33,6 @@ function Descriptor:get_server_command_by_id(command_id)
 end
 
 Descriptor.attribute_direction_map = {
-  ["DeviceTypeList"] = "server",
   ["PartsList"] = "server",
 }
 

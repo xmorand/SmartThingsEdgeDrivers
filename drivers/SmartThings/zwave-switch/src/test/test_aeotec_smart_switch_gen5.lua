@@ -53,10 +53,7 @@ test.register_coroutine_test(
           Configuration:Set({ parameter_number = 103, configuration_value = 0, size = 4 })
       ))
       mock_switch:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

@@ -94,23 +94,14 @@ local function emit_refresh_data_to_server(driver, device, cmd)
 
   -- get volume
   local vol = command.volume(device:get_field("ip"))
-  local current_volume = vol and tonumber(vol.volume)
-  if current_volume ~= nil then
-    device:emit_event(capabilities.audioVolume.volume(current_volume))
-  else
-    log.warn("Unable to read speaker volume from refresh response")
-  end
+  device:emit_event(capabilities.audioVolume.volume(tonumber(vol.volume)))
 
   -- get mute status
   local muteStatus = command.getMute(device:get_field("ip"))
-  if muteStatus and muteStatus.muted ~= nil then
-    if muteStatus.muted ~= "off" then
-      device:emit_event(capabilities.audioMute.mute.muted())
-    else
-      device:emit_event(capabilities.audioMute.mute.unmuted())
-    end
+  if muteStatus.muted ~= "off" then
+    device:emit_event(capabilities.audioMute.mute.muted())
   else
-    log.warn("Unable to read speaker mute state from refresh response")
+    device:emit_event(capabilities.audioMute.mute.unmuted())
   end
 end
 

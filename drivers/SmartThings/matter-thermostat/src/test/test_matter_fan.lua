@@ -111,10 +111,7 @@ test.register_coroutine_test(
     mock_device:expect_metadata_update({ profile = "fan-rock-wind" })
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
   end,
-  {
-    test_init = test_init,
-    min_api_version = 15
-  }
+  { test_init = test_init }
 )
 
 test.register_coroutine_test(
@@ -126,10 +123,7 @@ test.register_coroutine_test(
     mock_device_generic:expect_metadata_update({ profile = "fan-generic" })
     mock_device_generic:expect_metadata_update({ provisioning_state = "PROVISIONED" })
   end,
-  {
-    test_init = test_init_generic,
-    min_api_version = 15
-  }
+  { test_init = test_init_generic }
 )
 
 test.run_registered_tests()

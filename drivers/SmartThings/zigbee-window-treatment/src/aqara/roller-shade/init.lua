@@ -1,6 +1,3 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local capabilities = require "st.capabilities"
 local clusters = require "st.zigbee.zcl.clusters"
 local cluster_base = require "st.zigbee.cluster_base"
@@ -136,7 +133,9 @@ local aqara_roller_shade_handler = {
       }
     }
   },
-  can_handle = require("aqara.roller-shade.can_handle"),
+  can_handle = function(opts, driver, device, ...)
+    return device:get_model() == "lumi.curtain.aq2"
+  end
 }
 
 return aqara_roller_shade_handler

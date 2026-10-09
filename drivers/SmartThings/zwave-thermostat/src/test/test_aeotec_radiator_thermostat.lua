@@ -94,8 +94,7 @@ test.register_message_test(
       --
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -112,9 +111,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.battery.battery(99))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -131,9 +127,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.battery.battery(1))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -162,9 +155,6 @@ test.register_message_test(
           { device_uuid = mock_device.id, capability_id = "temperatureMeasurement", capability_attr_id = "temperature" }
         }
       }
-    },
-    {
-       min_api_version = 15
     }
 )
 
@@ -182,9 +172,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.thermostatMode.thermostatMode({ value = "heat" }))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -205,9 +192,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.thermostatHeatingSetpoint.heatingSetpoint({ value = 21.5, unit = 'C' }))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -233,10 +217,7 @@ test.register_coroutine_test(
               ThermostatMode:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -266,10 +247,7 @@ test.register_coroutine_test(
                                      })
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

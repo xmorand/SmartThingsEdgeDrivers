@@ -1,19 +1,28 @@
--- Copyright 2023 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
+-- Copyright 2023 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
--- These are test units designed to validate User, Credential, and Schedule features.
 local test = require "integration_test"
 test.set_rpc_version(0)
 local capabilities = require "st.capabilities"
 local t_utils = require "integration_test.utils"
 local clusters = require "st.matter.clusters"
-local cluster_base = require "st.matter.cluster_base"
 local DoorLock = clusters.DoorLock
 local types = DoorLock.types
 local lock_utils = require "lock_utils"
 
 local mock_device = test.mock_device.build_test_matter_device({
-  profile = t_utils.get_profile_definition("lock.yml"),
+  profile = t_utils.get_profile_definition("lock-user-pin-schedule.yml"),
   manufacturer_info = {
     vendor_id = 0x115f,
     product_id = 0x2802,
@@ -35,7 +44,7 @@ local mock_device = test.mock_device.build_test_matter_device({
           cluster_id = DoorLock.ID,
           cluster_type = "SERVER",
           cluster_revision = 1,
-          feature_map = 0x0591, -- PIN & WDSCH & USR & COTA & YDSCH
+          feature_map = 0x0181, -- PIN & USR & COTA
         }
       },
       device_types = {
@@ -45,15 +54,8 @@ local mock_device = test.mock_device.build_test_matter_device({
   }
 })
 
-local DoorLockFeatureMapAttr = {ID = 0xFFFC, cluster = DoorLock.ID}
 local function test_init()
   test.disable_startup_messages()
-  -- device_added
-  test.mock_device.add_test_device(mock_device)
-  test.socket.device_lifecycle:__queue_receive({ mock_device.id, "added" })
-  test.socket.capability:__expect_send(
-    mock_device:generate_test_message("main", capabilities.lockAlarm.alarm.clear({state_change = true}))
-  )
   -- subscribe request
   local subscribe_request = DoorLock.attributes.LockState:subscribe(mock_device)
   subscribe_request:merge(DoorLock.attributes.OperatingMode:subscribe(mock_device))
@@ -64,41 +66,28 @@ local function test_init()
   subscribe_request:merge(DoorLock.attributes.RequirePINforRemoteOperation:subscribe(mock_device))
   subscribe_request:merge(DoorLock.attributes.NumberOfWeekDaySchedulesSupportedPerUser:subscribe(mock_device))
   subscribe_request:merge(DoorLock.attributes.NumberOfYearDaySchedulesSupportedPerUser:subscribe(mock_device))
-  subscribe_request:merge(cluster_base.subscribe(mock_device, nil, DoorLockFeatureMapAttr.cluster, DoorLockFeatureMapAttr.ID))
   subscribe_request:merge(DoorLock.events.LockOperation:subscribe(mock_device))
   subscribe_request:merge(DoorLock.events.DoorLockAlarm:subscribe(mock_device))
   subscribe_request:merge(DoorLock.events.LockUserChange:subscribe(mock_device))
+  -- add test device, handle initial subscribe
+  test.mock_device.add_test_device(mock_device)
   test.socket["matter"]:__expect_send({mock_device.id, subscribe_request})
-  -- device_init
+  -- actual onboarding flow
+  test.socket.device_lifecycle:__queue_receive({ mock_device.id, "added" })
+  test.socket.capability:__expect_send(
+    mock_device:generate_test_message("main", capabilities.lockAlarm.alarm.clear({state_change = true}))
+  )
   test.socket.device_lifecycle:__queue_receive({ mock_device.id, "init" })
-  -- do_configure
+  test.socket["matter"]:__expect_send({mock_device.id, subscribe_request})
   test.socket.device_lifecycle:__queue_receive({ mock_device.id, "doConfigure" })
   test.socket.capability:__expect_send(
     mock_device:generate_test_message("main", capabilities.lock.supportedLockCommands({"lock", "unlock"}, {visibility = {displayed = false}}))
   )
-  mock_device:expect_metadata_update({ profile = "lock-user-pin-schedule" })
+  mock_device:expect_metadata_update({ profile = "lock-user-pin" })
   mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-  -- info_changed
-  test.socket.device_lifecycle:__queue_receive(mock_device:generate_info_changed({ profile = t_utils.get_profile_definition("lock-user-pin-schedule.yml")}))
-  test.socket["matter"]:__expect_send({mock_device.id, subscribe_request})
 end
 
 test.set_test_init_function(test_init)
-
-test.register_coroutine_test(
-  "Handle driverSwitched event",
-  function()
-    test.socket.device_lifecycle:__queue_receive({ mock_device.id, "driverSwitched" })
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message("main", capabilities.lock.supportedLockCommands({"lock", "unlock"}, {visibility = {displayed = false}}))
-    )
-    mock_device:expect_metadata_update({ profile = "lock-user-pin-schedule" })
-    mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-  end,
-  {
-     min_api_version = 14
-  }
-)
 
 test.register_coroutine_test(
   "Handle received OperatingMode(Normal, Vacation) from Matter device.",
@@ -131,10 +120,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lock.supportedLockCommands({"lock", "unlock"}, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -182,10 +168,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lock.supportedLockCommands({}, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -202,10 +185,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lockUsers.totalUsersSupported(10, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -222,10 +202,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lockCredentials.pinUsersSupported(10, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -242,10 +219,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lockCredentials.minPinCodeLen(6, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -262,10 +236,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lockCredentials.maxPinCodeLen(8, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -282,10 +253,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lockSchedules.weekDaySchedulesPerUser(5, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -302,10 +270,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lockSchedules.yearDaySchedulesPerUser(5, {visibility = {displayed = false}}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -373,10 +338,7 @@ test.register_coroutine_test(
         ),
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -454,10 +416,7 @@ function()
   )
   test.mock_time.advance_time(1)
   test.wait_for_events()
-end,
-{
-   min_api_version = 14
-}
+end
 )
 
 test.register_coroutine_test(
@@ -471,10 +430,7 @@ test.register_coroutine_test(
         ),
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -491,10 +447,7 @@ test.register_coroutine_test(
         mock_device.id,
         clusters.DoorLock.server.commands.UnlockDoor(mock_device, 1, "654123"),
       })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -510,10 +463,7 @@ test.register_coroutine_test(
         mock_device.id,
         clusters.DoorLock.server.commands.LockDoor(mock_device, 1, "654123"),
       })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_message_test(
@@ -531,9 +481,6 @@ test.register_message_test(
       direction = "send",
       message = {mock_device.id, DoorLock.server.commands.LockDoor(mock_device, 1)},
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -555,9 +502,6 @@ test.register_message_test(
         DoorLock.server.commands.UnlockDoor(mock_device, 1),
       },
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -577,10 +521,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lock.lock.locked())
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -599,10 +540,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lock.lock.unlocked())
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -621,10 +559,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.lock.lock.not_fully_locked())
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 local function refresh_commands(dev)
@@ -647,9 +582,6 @@ test.register_message_test(
       direction = "send",
       message = {mock_device.id, refresh_commands(mock_device)},
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -746,9 +678,6 @@ test.register_message_test(
         capabilities.lockAlarm.alarm.forcedOpeningAttempt({state_change = true})
       ),
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -942,7 +871,7 @@ test.register_message_test(
       message = mock_device:generate_test_message(
         "main",
         capabilities.lock.lock.unlocked(
-          {data = {userIndex = 1}, state_change = true}
+          {data = {method = "keypad", userIndex = 1}, state_change = true}
         )
       ),
     },
@@ -969,14 +898,25 @@ test.register_message_test(
       message = mock_device:generate_test_message(
         "main",
         capabilities.lock.lock.unlocked(
-          {data = {method = "digitalKey", userIndex = 1}, state_change = true}
+          {data = {userIndex = 1}, state_change = true}
         )
       ),
     }
-  },
-  {
-     min_api_version = 14
   }
+)
+
+test.register_coroutine_test(
+  "Added lifecycle event lock nocodes nobattery",
+  function()
+    test.socket.device_lifecycle:__queue_receive({ mock_device.id, "added" })
+
+    test.socket.capability:__expect_send(
+      mock_device:generate_test_message(
+        "main",
+        capabilities.lockAlarm.alarm.clear({state_change = true})
+      )
+    )
+  end
 )
 
 test.register_coroutine_test(
@@ -1042,10 +982,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1069,10 +1006,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1113,10 +1047,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1162,10 +1093,7 @@ test.register_coroutine_test(
       )
     )
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1189,10 +1117,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1255,10 +1180,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1282,10 +1204,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1348,10 +1267,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1375,10 +1291,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1406,7 +1319,7 @@ test.register_coroutine_test(
           "654123", -- credential_data
           1, -- user_index
           nil, -- user_status
-          nil -- user_type
+          DoorLock.types.DlUserType.UNRESTRICTED_USER -- user_type
         ),
       }
     )
@@ -1440,10 +1353,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1469,10 +1379,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1500,7 +1407,7 @@ test.register_coroutine_test(
           "654123", -- credential_data
           1, -- user_index
           nil, -- user_status
-          nil -- user_type
+          DoorLock.types.DlUserType.UNRESTRICTED_USER -- user_type
         ),
       }
     )
@@ -1525,10 +1432,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1556,7 +1460,7 @@ test.register_coroutine_test(
           "654123", -- credential_data
           1, -- user_index
           nil, -- user_status
-          nil -- user_type
+          DoorLock.types.DlUserType.UNRESTRICTED_USER -- user_type
         ),
       }
     )
@@ -1588,10 +1492,7 @@ test.register_coroutine_test(
         ),
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1619,7 +1520,7 @@ test.register_coroutine_test(
           "654123", -- credential_data
           1, -- user_index
           nil, -- user_status
-          nil -- user_type
+          DoorLock.types.DlUserType.UNRESTRICTED_USER -- user_type
         ),
       }
     )
@@ -1644,113 +1545,19 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
-  "Update Credential for Guest user should not add default schedule again",
+  "Handle Update Credential command received from SmartThings.",
   function()
-    -- Add Guest user with credential. This sets the USER_TYPE field to "guest".
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockCredentials.ID,
-          command = "addCredential",
-          args = {0, "guest", "pin", "654123"}
-        },
-      }
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetCredential(
-          mock_device, 1, -- endpoint
-          DoorLock.types.DataOperationTypeEnum.ADD, -- operation_type
-          DoorLock.types.CredentialStruct(
-            {credential_type = DoorLock.types.CredentialTypeEnum.PIN, credential_index = 1}
-          ), -- credential
-          "654123", -- credential_data
-          nil, -- user_index
-          nil, -- user_status
-          DoorLock.types.UserTypeEnum.SCHEDULE_RESTRICTED_USER -- user_type
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.client.commands.SetCredentialResponse:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.SUCCESS, -- status
-          1, -- user_index
-          2 -- next_credential_index
-        ),
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockUsers.users(
-          {{userIndex = 1, userType = "guest"}},
-          {visibility={displayed=false}}
-        )
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.credentials(
-          {{credentialIndex=1, credentialType="pin", userIndex=1}},
-          {visibility={displayed=false}}
-        )
-      )
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule(
-          mock_device, 1, -- endpoint
-          1, -- year_day_index
-          1, -- user_index
-          0, -- local_start_time
-          0xffffffff -- local_end_time
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.SUCCESS -- status
-        ),
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.commandResult(
-          {commandName="addCredential", credentialIndex=1, statusCode="success", userIndex=1},
-          {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-    test.wait_for_events()
-    -- Update the Guest user's credential. The stale "guest" USER_TYPE field must
-    -- be cleared so the default schedule is not added again on the response.
     test.socket.capability:__queue_receive(
       {
         mock_device.id,
         {
           capability = capabilities.lockCredentials.ID,
           command = "updateCredential",
-          args = {1, 1, "pin", "111213"}
+          args = {1, 1, "pin", "654123"}
         },
       }
     )
@@ -1763,7 +1570,7 @@ test.register_coroutine_test(
           DoorLock.types.CredentialStruct(
             {credential_type = DoorLock.types.CredentialTypeEnum.PIN, credential_index = 1}
           ), -- credential
-          "111213", -- credential_data
+          "654123", -- credential_data
           1, -- user_index
           nil, -- user_status
           nil -- user_type
@@ -1782,7 +1589,6 @@ test.register_coroutine_test(
         ),
       }
     )
-    -- The commandResult must be emitted without sending SetYearDaySchedule
     test.socket.capability:__expect_send(
       mock_device:generate_test_message(
         "main",
@@ -1792,10 +1598,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1821,10 +1624,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1875,10 +1675,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1904,10 +1701,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -1976,10 +1770,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -2005,10 +1796,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -2076,10 +1864,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -2105,10 +1890,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -2155,10 +1937,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -2187,430 +1966,7 @@ test.register_coroutine_test(
         )
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-local LOCAL_START_TIME = "2025-01-15T09:00:00"
-local LOCAL_END_TIME = "2025-01-15T17:00:00"
-
-test.register_coroutine_test(
-  "Handle Add Year Day Schedule command received from SmartThings.",
-  function()
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockSchedules.ID,
-          command = "setYearDaySchedule",
-          args = {1, 1, {localStartTime=LOCAL_START_TIME, localEndTime=LOCAL_END_TIME}}
-        },
-      }
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule(
-          mock_device, 1, -- endpoint
-          1, -- Schedule Index
-          1, -- User Index
-          lock_utils.iso8601_to_epoch(LOCAL_START_TIME), -- Start Time (epoch)
-          lock_utils.iso8601_to_epoch(LOCAL_END_TIME) -- End Time (epoch)
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule:build_test_command_response(
-          mock_device, 1
-        )
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.yearDaySchedules(
-          {{
-            userIndex=1,
-            schedules={{
-              scheduleIndex = 1,
-              localStartTime = LOCAL_START_TIME,
-              localEndTime = LOCAL_END_TIME
-            }},
-          }},
-          {visibility={displayed=false}}
-        )
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.commandResult(
-          {commandName="setYearDaySchedule", userIndex=1, scheduleIndex=1, statusCode="success"},
-          {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-  "Add Year Day Schedule command received from SmartThings and send busy state",
-  function()
-    mock_device:set_field(lock_utils.BUSY_STATE, os.time(), {persist = true})
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockSchedules.ID,
-          command = "setYearDaySchedule",
-          args = {1, 1, {localStartTime=LOCAL_START_TIME, localEndTime=LOCAL_END_TIME}}
-        },
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.commandResult(
-          {commandName="setYearDaySchedule", statusCode="busy"},
-          {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-  "Handle Clear Year Day Schedule command received from SmartThings.",
-  function()
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockSchedules.ID,
-          command = "clearYearDaySchedules",
-          args = {
-            1, -- user index
-            1, -- schedule index
-          }
-        },
-      }
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule(
-          mock_device, 1, -- endpoint
-          1, -- year_day_index
-          1, -- user_index
-          0, -- local_start_time
-          lock_utils.MAX_EPOCH_S -- local_end_time
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule:build_test_command_response(
-          mock_device, 1
-        )
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.commandResult(
-          {commandName="clearYearDaySchedules", userIndex=1, scheduleIndex=1, statusCode="success"},
-          {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-  "Clear Year Day Schedule command received from SmartThings and send busy state",
-  function()
-    mock_device:set_field(lock_utils.BUSY_STATE, os.time(), {persist = true})
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockSchedules.ID,
-          command = "clearYearDaySchedules",
-          args = {
-            1, -- user index
-            1, -- schedule index
-          }
-        },
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.commandResult(
-          {commandName="clearYearDaySchedules", statusCode="busy"},
-          {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-  "Add Guest User and failure response ",
-  function()
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockCredentials.ID,
-          command = "addCredential",
-          args = {0, "guest", "pin", "654123"}
-        },
-      }
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetCredential(
-          mock_device, 1, -- endpoint
-          DoorLock.types.DataOperationTypeEnum.ADD, -- operation_type
-          DoorLock.types.CredentialStruct(
-            {credential_type = DoorLock.types.CredentialTypeEnum.PIN, credential_index = 1}
-          ), -- credential
-          "654123", -- credential_data
-          nil, -- user_index
-          nil, -- user_status
-          DoorLock.types.UserTypeEnum.SCHEDULE_RESTRICTED_USER -- user_type
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.client.commands.SetCredentialResponse:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.SUCCESS, -- status
-          1, -- user_index
-          2 -- next_credential_index
-        ),
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockUsers.users({{userIndex = 1, userType = "guest"}}, {visibility={displayed=false}})
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.credentials(
-          {{credentialIndex=1, credentialType="pin", userIndex=1}}, {visibility={displayed=false}}
-        )
-      )
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule(
-          mock_device, 1, -- endpoint
-          1, -- year_day_index
-          1, -- user_index
-          0, -- local_start_time
-          0xffffffff -- local_end_time
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.FAILURE -- status
-        ),
-      }
-    )
-    test.socket.matter:__expect_send({
-      mock_device.id,
-      DoorLock.server.commands.ClearUser(
-        mock_device, 1,
-        1
-      )
-    })
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.ClearUser:build_test_command_response(
-          mock_device, 1
-        ),
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockUsers.users({}, {visibility={displayed=false}})
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.credentials({}, {visibility={displayed=false}})
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.weekDaySchedules({}, {visibility={displayed=false}})
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockSchedules.yearDaySchedules({}, {visibility={displayed=false}})
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.commandResult(
-          {commandName="addCredential", statusCode="failure", userIndex=1}, {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-  "Add Guest User and failure response, and ClearUser command fails as well",
-  function()
-    test.socket.capability:__queue_receive(
-      {
-        mock_device.id,
-        {
-          capability = capabilities.lockCredentials.ID,
-          command = "addCredential",
-          args = {0, "guest", "pin", "654123"}
-        },
-      }
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetCredential(
-          mock_device, 1, -- endpoint
-          DoorLock.types.DataOperationTypeEnum.ADD, -- operation_type
-          DoorLock.types.CredentialStruct(
-            {credential_type = DoorLock.types.CredentialTypeEnum.PIN, credential_index = 1}
-          ), -- credential
-          "654123", -- credential_data
-          nil, -- user_index
-          nil, -- user_status
-          DoorLock.types.UserTypeEnum.SCHEDULE_RESTRICTED_USER -- user_type
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.client.commands.SetCredentialResponse:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.SUCCESS, -- status
-          1, -- user_index
-          2 -- next_credential_index
-        ),
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockUsers.users({{userIndex = 1, userType = "guest"}}, {visibility={displayed=false}})
-      )
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.credentials(
-          {{credentialIndex=1, credentialType="pin", userIndex=1}}, {visibility={displayed=false}}
-        )
-      )
-    )
-    test.socket.matter:__expect_send(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule(
-          mock_device, 1, -- endpoint
-          1, -- year_day_index
-          1, -- user_index
-          0, -- local_start_time
-          0xffffffff -- local_end_time
-        ),
-      }
-    )
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.SetYearDaySchedule:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.FAILURE -- status
-        ),
-      }
-    )
-    test.socket.matter:__expect_send({
-      mock_device.id,
-      DoorLock.server.commands.ClearUser(
-        mock_device, 1,
-        1
-      )
-    })
-    test.wait_for_events()
-    test.socket.matter:__queue_receive(
-      {
-        mock_device.id,
-        DoorLock.server.commands.ClearUser:build_test_command_response(
-          mock_device, 1,
-          DoorLock.types.DlStatus.FAILURE -- status
-        ),
-      }
-    )
-    test.socket.capability:__expect_send(
-      mock_device:generate_test_message(
-        "main",
-        capabilities.lockCredentials.commandResult(
-          {commandName="addCredential", statusCode="success", userIndex=1}, {state_change=true, visibility={displayed=false}}
-        )
-      )
-    )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

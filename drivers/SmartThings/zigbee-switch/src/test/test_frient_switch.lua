@@ -79,9 +79,6 @@ test.register_message_test(
                 direction = "send",
                 message = mock_device:generate_test_message("main", capabilities.powerSource.powerSource.mains())
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -116,11 +113,7 @@ test.register_message_test("Current divisor, multiplier, summation should be han
                 direction = "send",
                 message = mock_device:generate_test_message("main", capabilities.currentMeasurement.current({ value = 200.0, unit = "A" }))
             },
-        },
-        {
-           min_api_version = 14
-        }
-)
+        })
 
 test.register_coroutine_test("Refresh command should read all necessary attributes", function()
     test.socket.zigbee:__set_channel_ordering("relaxed")
@@ -151,11 +144,7 @@ test.register_coroutine_test("Refresh command should read all necessary attribut
     test.socket.zigbee:__expect_send(
             {mock_device.id, OnOff.attributes.OnOff:read(mock_device) }
     )
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_message_test(
   "Handle switch ON report",
@@ -178,9 +167,6 @@ test.register_message_test(
             { device_uuid = mock_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -205,9 +191,6 @@ test.register_message_test(
               { device_uuid = mock_device.id, capability_id = "switch", capability_attr_id = "switch" }
           }
       },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -237,9 +220,6 @@ test.register_message_test(
             { device_uuid = mock_device.id, capability_id = "powerMeter", capability_attr_id = "power" }
         }
         }
-    },
-    {
-       min_api_version = 15
     }
 )
 
@@ -262,9 +242,6 @@ test.register_message_test(
             message = mock_device:generate_test_message("main", capabilities.energyMeter.energy({ value = 0.027, unit = "kWh" }))
 
         }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -275,10 +252,7 @@ test.register_coroutine_test(
             assert(mock_device:get_field(constants.SIMPLE_METERING_DIVISOR_KEY) == 1000)
             assert(mock_device:get_field(constants.ELECTRICAL_MEASUREMENT_DIVISOR_KEY) == 1000)
             test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.powerSource.powerSource.mains()))
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test("doConfigure should send bind request, read attributes and configure reporting", function()
@@ -339,11 +313,7 @@ test.register_coroutine_test("doConfigure should send bind request, read attribu
     test.socket.zigbee:__expect_send({mock_device.id, Alarms.attributes.AlarmCount:read(mock_device)})
 
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test(
         "Alarm report should be handled",
@@ -355,10 +325,7 @@ test.register_coroutine_test(
             test.mock_time.advance_time(2)
 
             test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.powerSource.powerSource.unknown()))
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.run_registered_tests()

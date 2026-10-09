@@ -4,7 +4,6 @@
 local test = require "integration_test"
 local t_utils = require "integration_test.utils"
 local clusters = require "st.matter.clusters"
-local capabilities = require "st.capabilities"
 local uint32 = require "st.matter.data_types.Uint32"
 
 test.set_rpc_version(7)
@@ -70,9 +69,6 @@ local function test_init()
   end
 
   test.socket.matter:__expect_send({mock_device.id, subscribe_request})
-  test.socket.capability:__expect_send(
-    mock_device:generate_test_message("main", capabilities.thermostatOperatingState.supportedThermostatOperatingStates({"idle", "cooling"}, {visibility = {displayed = false}}))
-  )
   test.mock_device.add_test_device(mock_device)
 
   test.socket.device_lifecycle:__queue_receive({ mock_device.id, "added" })
@@ -105,10 +101,7 @@ test.register_coroutine_test(
       }
     )
     mock_device:expect_metadata_update({ profile = "thermostat-cooling-only-nostate" })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -127,10 +120,7 @@ test.register_coroutine_test(
       }
     )
     mock_device:expect_metadata_update({ profile = "thermostat-cooling-only-nostate-batteryLevel" })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -142,10 +132,7 @@ test.register_coroutine_test(
         clusters.PowerSource.attributes.AttributeList:build_test_report_data(mock_device, 1, {uint32(10)})
       }
     )
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.run_registered_tests()

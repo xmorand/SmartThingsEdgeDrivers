@@ -1,6 +1,16 @@
--- Copyright 2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2022 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 -- Mock out globals
 local test = require "integration_test"
@@ -40,10 +50,7 @@ test.register_coroutine_test(
       local alert_command = ApplianceEventsAlerts.client.commands.AlertsNotification.build_test_rx(mock_device, 0x01, {0x001181})
       test.socket.zigbee:__queue_receive({ mock_device.id, alert_command })
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.waterSensor.water.wet()))
-      end,
-      {
-         min_api_version = 14
-      }
+      end
 )
 
 test.register_coroutine_test(
@@ -52,10 +59,7 @@ test.register_coroutine_test(
       local alert_command = ApplianceEventsAlerts.client.commands.AlertsNotification.build_test_rx(mock_device, 0x01, {0x000081})
       test.socket.zigbee:__queue_receive({ mock_device.id, alert_command })
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.waterSensor.water.dry()))
-      end,
-      {
-         min_api_version = 14
-      }
+      end
 )
 
 test.register_coroutine_test(
@@ -64,10 +68,7 @@ test.register_coroutine_test(
       local alert_command = ApplianceEventsAlerts.client.commands.AlertsNotification.build_test_rx(mock_device, 0x01, {0x000581})
       test.socket.zigbee:__queue_receive({ mock_device.id, alert_command })
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.waterSensor.water.dry()))
-      end,
-      {
-         min_api_version = 14
-      }
+      end
 )
 
 test.register_coroutine_test(
@@ -76,10 +77,7 @@ test.register_coroutine_test(
       local alert_command = ApplianceEventsAlerts.client.commands.AlertsNotification.build_test_rx(mock_device, 0x01, {0x001081})
       test.socket.zigbee:__queue_receive({ mock_device.id, alert_command })
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.waterSensor.water.dry()))
-      end,
-      {
-         min_api_version = 14
-      }
+      end
 )
 
 test.register_coroutine_test(
@@ -88,24 +86,30 @@ test.register_coroutine_test(
       local alert_command = ApplianceEventsAlerts.client.commands.AlertsNotification.build_test_rx(mock_device, 0x01, {0x001281})
       test.socket.zigbee:__queue_receive({ mock_device.id, alert_command })
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.waterSensor.water.dry()))
-      end,
-      {
-         min_api_version = 14
-      }
+      end
 )
 
-test.register_coroutine_test(
-    "Added lifecycle should emit water dry event",
-    function()
-      test.socket.device_lifecycle:__queue_receive({mock_device.id, "added"})
-      test.socket.capability:__expect_send(
-        mock_device:generate_test_message("main", capabilities.waterSensor.water.dry())
-      )
-    end,
-    {
-       min_api_version = 14
-    }
-)
+-- test.register_coroutine_test(
+--     "Health check should check all relevant attributes",
+--     function()
+--       test.socket.device_lifecycle:__queue_receive({mock_device.id, "added"})
+--       test.socket.capability:__expect_send(
+--         {
+--           mock_device.id,
+--           {
+--             capability_id = "waterSensor", component_id = "main",
+--             attribute_id = "water", state={value="dry"}
+--           }
+--         }
+--       )
+--     end,
+--     {
+--       test_init = function()
+--         test.mock_device.add_test_device(mock_device)
+--         test.timer.__create_and_queue_test_time_advance_timer(30, "interval", "health_check")
+--       end
+--     }
+-- )
 
 test.register_coroutine_test(
     "Configure should configure all necessary attributes",
@@ -167,10 +171,7 @@ test.register_coroutine_test(
                                          IASZone.attributes.ZoneStatus:read(mock_device)
                                       })
       mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

@@ -1,6 +1,16 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2025 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local test = require "integration_test"
 local t_utils = require "integration_test.utils"
@@ -172,9 +182,6 @@ test.register_message_test(
           }))
       }
     }, -- on receiving NO ERROR we don't do anything.
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -257,8 +264,7 @@ test.register_message_test(
     test_init = function()
       test_init()
       init_supported_microwave_oven_modes()
-    end,
-    min_api_version = 15
+    end
   }
 )
 
@@ -336,9 +342,6 @@ test.register_message_test(
           }))
       }
     }, -- on receiving NO ERROR we don't do anything.
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -451,9 +454,6 @@ test.register_message_test(
           }))
       }
     }, -- on receiving NO ERROR we don't do anything.
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -477,9 +477,6 @@ test.register_message_test(
         maximum = 900
       },{visibility={displayed=false}}))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -570,9 +567,6 @@ test.register_message_test(
           300)
       }
     },
-  },
-  {
-     min_api_version = 19
   }
 )
 

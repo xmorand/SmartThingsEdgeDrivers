@@ -32,9 +32,7 @@ test.register_coroutine_test("zwave_device_handled", function()
     test.socket.device_lifecycle:__queue_receive({ mock_device.id, "infoChanged", dkjson.encode(mock_device.raw_st_data) })
     test.wait_for_events()
   end,
-  {
-    min_api_version = 14
-  }
+  nil
 )
 
 test.register_message_test(
@@ -43,9 +41,6 @@ test.register_message_test(
         channel = "capability",
         direction = "receive",
         message = { mock_device.id, { capability = "switch", component = "main", command = "on", args = { } } }
-  },
-  {
-     min_api_version = 14
   }
 )
 

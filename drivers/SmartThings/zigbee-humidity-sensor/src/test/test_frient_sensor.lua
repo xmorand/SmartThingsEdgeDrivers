@@ -66,8 +66,7 @@ test.register_message_test(
     },
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -84,9 +83,6 @@ test.register_message_test(
                 direction = "send",
                 message = mock_device:generate_test_message("main", capabilities.battery.battery(0))
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -103,16 +99,12 @@ test.register_message_test(
                 direction = "send",
                 message = mock_device:generate_test_message("main", capabilities.battery.battery(100))
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 
 test.register_coroutine_test(
   "Configure should configure all necessary attributes",
   function()
-    test.timer.__create_and_queue_test_time_advance_timer(5, "oneshot")
     test.socket.device_lifecycle:__queue_receive({ mock_device.id, "doConfigure" })
     test.socket.zigbee:__set_channel_ordering("relaxed")
     test.socket.zigbee:__expect_send({
@@ -149,26 +141,7 @@ test.register_coroutine_test(
       TemperatureMeasurement.attributes.MeasuredValue:configure_reporting(mock_device, 0x001E, 0x0E10, 100)
     })
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    test.wait_for_events()
-
-    test.mock_time.advance_time(5)
-    test.socket.zigbee:__expect_send({
-      mock_device.id,
-      PowerConfiguration.attributes.BatteryVoltage:read(mock_device)
-    })
-    test.socket.zigbee:__expect_send({
-      mock_device.id,
-      HumidityMeasurement.attributes.MeasuredValue:read(mock_device)
-    })
-    test.socket.zigbee:__expect_send({
-      mock_device.id,
-      TemperatureMeasurement.attributes.MeasuredValue:read(mock_device)
-    })
-    test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_message_test(
@@ -187,9 +160,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.relativeHumidityMeasurement.humidity({ value = 65 }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -214,16 +184,12 @@ test.register_message_test(
         { device_uuid = mock_device.id, capability_id = "temperatureMeasurement", capability_attr_id = "temperature" }
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
 test.register_coroutine_test(
     "info_changed to check for necessary preferences settings: Temperature Sensitivity",
     function()
-        test.timer.__create_and_queue_test_time_advance_timer(5, "oneshot")
         local updates = {
             preferences = {
                 temperatureSensitivity = 0.9,
@@ -251,25 +217,7 @@ test.register_coroutine_test(
                                            )
         })
         test.wait_for_events()
-
-        test.mock_time.advance_time(5)
-        test.socket.zigbee:__expect_send({
-          mock_device.id,
-          PowerConfiguration.attributes.BatteryVoltage:read(mock_device)
-        })
-        test.socket.zigbee:__expect_send({
-          mock_device.id,
-          HumidityMeasurement.attributes.MeasuredValue:read(mock_device)
-        })
-        test.socket.zigbee:__expect_send({
-          mock_device.id,
-          TemperatureMeasurement.attributes.MeasuredValue:read(mock_device)
-        })
-        test.wait_for_events()
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

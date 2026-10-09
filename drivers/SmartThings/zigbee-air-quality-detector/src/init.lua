@@ -33,8 +33,7 @@ local zigbee_air_quality_detector_template = {
       capabilities.tvocMeasurement,
       capabilities.tvocHealthConcern
     },
-    sub_drivers = { require("MultiIR") },
-  shared_device_thread_enabled = true,
+    sub_drivers = { require("MultiIR") }
 }
 
 defaults.register_for_default_handlers(zigbee_air_quality_detector_template, zigbee_air_quality_detector_template.supported_capabilities)

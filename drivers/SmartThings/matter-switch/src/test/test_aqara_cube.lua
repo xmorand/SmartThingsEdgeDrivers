@@ -233,10 +233,7 @@ test.register_coroutine_test(
           "main", capabilities.battery.battery(math.floor(150 / 2.0 + 0.5))
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -268,10 +265,7 @@ test.register_coroutine_test(
         mock_device_exhausted:generate_test_message("main", cubeFace.cubeFace({value = "face1Up"}))
       )
     end,
-    {
-      test_init = test_init_exhausted,
-      min_api_version = 14
-    }
+    { test_init = test_init_exhausted }
 )
 
 -- run the tests

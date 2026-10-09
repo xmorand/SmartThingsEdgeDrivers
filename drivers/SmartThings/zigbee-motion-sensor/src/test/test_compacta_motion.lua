@@ -75,10 +75,7 @@ test.register_coroutine_test(
         TemperatureMeasurement.attributes.MeasuredValue:configure_reporting(mock_device, 30, 300, 100):to_endpoint(0x03)
       })
       mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -99,10 +96,7 @@ test.register_coroutine_test(
         mock_device.id,
         IASZone.attributes.ZoneStatus:read(mock_device)
       })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

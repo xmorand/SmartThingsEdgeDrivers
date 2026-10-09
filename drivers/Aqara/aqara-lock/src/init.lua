@@ -86,7 +86,6 @@ local function device_init(self, device)
   end
   device:emit_event(capabilities.battery.quantity(battery_quantity))
   device:emit_event(capabilities.batteryLevel.quantity(battery_quantity))
-  credential_utils.sync(self, device)
 end
 
 local function device_added(self, device)

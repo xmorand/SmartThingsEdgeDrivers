@@ -750,7 +750,6 @@ matter_driver_template = {
     capabilities.battery,
     capabilities.chargingState
   },
-  shared_device_thread_enabled = true,
 }
 
 local matter_driver = MatterDriver("matter-energy", matter_driver_template)

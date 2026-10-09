@@ -43,9 +43,6 @@ test.register_message_test(
         direction = "send",
         message = mock_switch:generate_test_message("main", capabilities.battery.battery(99))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -75,8 +72,7 @@ test.register_message_test(
       },
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -109,8 +105,7 @@ test.register_message_test(
     },
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 

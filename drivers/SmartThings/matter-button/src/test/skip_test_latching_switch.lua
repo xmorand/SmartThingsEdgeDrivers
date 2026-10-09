@@ -1,6 +1,3 @@
--- Copyright 2026 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
 local t_utils = require "integration_test.utils"
@@ -84,10 +81,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 19
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -122,10 +116,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 19
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -144,10 +135,7 @@ test.register_coroutine_test(
       )
     )
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 19
-  }
+  end
 )
 
 -- run the tests

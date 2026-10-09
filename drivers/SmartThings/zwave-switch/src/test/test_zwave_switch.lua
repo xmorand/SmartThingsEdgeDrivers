@@ -76,9 +76,6 @@ test.register_message_test(
           { device_uuid = mock_switch_binary.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -103,9 +100,6 @@ test.register_message_test(
           { device_uuid = mock_switch_binary.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -128,8 +122,7 @@ test.register_message_test(
       },
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -154,8 +147,7 @@ test.register_message_test(
     },
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -177,8 +169,7 @@ test.register_message_test(
       },
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -203,8 +194,7 @@ test.register_message_test(
     },
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -236,10 +226,7 @@ test.register_coroutine_test(
               Basic:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -270,10 +257,7 @@ test.register_coroutine_test(
               Basic:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -304,10 +288,7 @@ test.register_coroutine_test(
               SwitchBinary:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -338,10 +319,7 @@ test.register_coroutine_test(
               SwitchBinary:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

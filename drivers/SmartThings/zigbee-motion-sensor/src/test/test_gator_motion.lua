@@ -44,10 +44,7 @@ test.register_coroutine_test(
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.active()))
       test.mock_time.advance_time(120)
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -63,10 +60,7 @@ test.register_coroutine_test(
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.presenceSensor.presence.present()))
       test.mock_time.advance_time(60)
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.presenceSensor.presence.not_present()))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -79,10 +73,7 @@ test.register_coroutine_test(
           }
       )
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.contactSensor.contact.open()))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -95,10 +86,7 @@ test.register_coroutine_test(
           }
       )
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.contactSensor.contact.closed()))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -111,10 +99,7 @@ test.register_coroutine_test(
           }
       )
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(100)))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -127,10 +112,7 @@ test.register_coroutine_test(
           }
       )
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(0)))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -143,10 +125,7 @@ test.register_coroutine_test(
           }
       )
       test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(10)))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -161,29 +140,7 @@ test.register_coroutine_test(
       mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
       test.wait_for_events()
       test.socket.device_lifecycle:__queue_receive({ mock_device.id, "doConfigure" })
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-    "ZoneStatusChangeNotification with alarm1 triggers motion active and inactive",
-    function()
-      test.timer.__create_and_queue_test_time_advance_timer(120, "oneshot")
-      test.socket.zigbee:__queue_receive(
-          {
-            mock_device.id,
-            IASZone.client.commands.ZoneStatusChangeNotification.build_test_rx(mock_device, 0x0001, 0x00)
-          }
-      )
-      test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.active()))
-      test.mock_time.advance_time(120)
-      test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
-    end,
-    {
-       min_api_version = 14
-    }
+  end
 )
 
 test.run_registered_tests()

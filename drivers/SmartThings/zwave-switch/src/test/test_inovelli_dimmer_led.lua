@@ -97,11 +97,7 @@ do
           Configuration:Get({ parameter_number=LED_COLOR_CONTROL_PARAMETER_NUMBER })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -133,11 +129,7 @@ do
         direction = "send",
         message = mock_inovelli_dimmer:generate_test_message(LED_BAR_COMPONENT_NAME, capabilities.colorControl.saturation(LED_GENERIC_SATURATION))
       }
-    },
-    {
-       min_api_version = 14
     }
-
   )
 end
 

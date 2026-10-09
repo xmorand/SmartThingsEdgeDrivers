@@ -1,5 +1,16 @@
--- Copyright 2024 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
+-- Copyright 2024 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 local zigbee_test_utils = require "integration_test.zigbee_test_utils"
 local cluster_base = require "st.zigbee.cluster_base"
 local clusters = require "st.zigbee.zcl.clusters"
@@ -75,10 +86,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID,
       PRIVATE_THERM0STAT_VALVE_DETECTION_SWITCH_ID, MFG_CODE, data_types.Uint8, 0x01) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -90,10 +98,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID,
       PRIVATE_ANTIFREEZE_MODE_TEMPERATURE_SETTING_ID, MFG_CODE, data_types.Uint32, 500) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -118,10 +123,7 @@ test.register_coroutine_test(
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
     capabilities.hardwareFault.hardwareFault.clear()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -156,10 +158,7 @@ test.register_coroutine_test(
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       valveCalibration.calibrationState.calibrationFailure()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -188,10 +187,7 @@ test.register_coroutine_test(
       capabilities.thermostatMode.thermostatMode.antifreezing()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       invisibleCapabilities.invisibleCapabilities({"thermostatHeatingSetpoint"})))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -256,10 +252,7 @@ test.register_coroutine_test(
       capabilities.valve.valve.open()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       invisibleCapabilities.invisibleCapabilities({"thermostatHeatingSetpoint"})))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -284,10 +277,7 @@ test.register_coroutine_test(
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("ChildLock",
       capabilities.lock.lock.locked()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -303,10 +293,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.battery.battery(48))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 -- test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events", function()
@@ -350,10 +337,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       capabilities.thermostatMode.thermostatMode.manual())
     )
-  end,
-  {
-     min_api_version = 19
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -364,10 +348,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID,
       PRIVATE_VALVE_SWITCH_ATTRIBUTE_ID, MFG_CODE, data_types.Uint8, 0x01) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -378,10 +359,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID,
       PRIVATE_VALVE_CALIBRATION_ID, MFG_CODE, data_types.Uint8, 0x01) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 
@@ -393,10 +371,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID,
       PRIVATE_CHILD_LOCK_ID, MFG_CODE, data_types.Uint8, 0x01) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 --]]
 test.register_coroutine_test(
@@ -468,10 +443,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.battery.battery(100))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

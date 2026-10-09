@@ -10,5 +10,6 @@ local sub_drivers = {
    lazy_load_if_possible("stelpro-ki-thermostat"),
    lazy_load_if_possible("qubino-flush-thermostat"),
    lazy_load_if_possible("thermostat-heating-battery"),
+   lazy_load_if_possible("apiv6_bugfix"),
 }
 return sub_drivers

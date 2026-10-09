@@ -1,6 +1,16 @@
--- Copyright 2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2022 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 local test = require "integration_test"
 local t_utils = require "integration_test.utils"
 local zigbee_test_utils = require "integration_test.zigbee_test_utils"
@@ -37,27 +47,13 @@ end
 test.set_test_init_function(test_init)
 
 test.register_coroutine_test(
-  "Added lifecycle should read ApplicationVersion",
-  function()
-    test.socket.device_lifecycle:__queue_receive({mock_device.id, "added"})
-    test.socket.zigbee:__expect_send({mock_device.id, Basic.attributes.ApplicationVersion:read(mock_device)})
-  end,
-  {
-     min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
   "Refresh necessary attributes",
   function()
     test.socket.zigbee:__set_channel_ordering("relaxed")
     test.socket.capability:__queue_receive({ mock_device.id, { capability = "refresh", component = "main", command = "refresh", args = {} } })
     test.socket.zigbee:__expect_send({ mock_device.id, IASZone.attributes.ZoneStatus:read(mock_device) })
     test.socket.zigbee:__expect_send({ mock_device.id, PowerConfiguration.attributes.BatteryPercentageRemaining:read(mock_device) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -79,10 +75,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.battery.battery(55))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -104,10 +97,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.battery.battery(55))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -129,10 +119,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.battery.battery(100))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -154,10 +141,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.battery.battery(100))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

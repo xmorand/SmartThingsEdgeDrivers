@@ -44,10 +44,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id, IASZone.attributes.ZoneStatus:read(mock_device) })
     test.socket.zigbee:__expect_send({ mock_device.id, PowerConfiguration.attributes.BatteryVoltage:read(mock_device) })
     test.socket.zigbee:__expect_send({ mock_device.id, IASZone.attributes.ZoneStatus:configure_reporting(mock_device, 0xFFFF, 0x0000, 0) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -96,10 +93,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id, PowerConfiguration.attributes.BatteryVoltage:read(mock_device) })
 
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

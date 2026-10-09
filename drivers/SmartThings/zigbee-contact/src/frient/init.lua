@@ -1,6 +1,16 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2025 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local clusters = require "st.zigbee.zcl.clusters"
 local battery_defaults = require "st.zigbee.defaults.battery_defaults"
@@ -70,7 +80,6 @@ local frient_sensor = {
     doConfigure = do_configure,
     infoChanged = info_changed
   },
-  sub_drivers = require("frient.sub_drivers"),
   zigbee_handlers = {
     cluster = {
       [IASZone.ID] = {
@@ -83,7 +92,9 @@ local frient_sensor = {
       }
     }
   },
-  can_handle = require("frient.can_handle"),
+  can_handle = function(opts, driver, device, ...)
+    return (device:get_manufacturer() == "frient A/S" and (device:get_model() == "WISZB-120" or device:get_model() == "WISZB-121" or device:get_model() == "WISZB-131"))
+  end
 }
 
 return frient_sensor

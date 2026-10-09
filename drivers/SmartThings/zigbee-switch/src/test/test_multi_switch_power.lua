@@ -116,8 +116,7 @@ test.register_coroutine_test(
     {
       test_init = function()
         -- no op to avoid auto device add and immediate init event on driver startup
-      end,
-      min_api_version = 14
+      end
     }
 )
 
@@ -140,8 +139,7 @@ test.register_coroutine_test(
     {
       test_init = function()
         -- no op to avoid auto device add and immediate init event on driver startup
-      end,
-      min_api_version = 14
+      end
     }
 )
 
@@ -171,8 +169,7 @@ test.register_message_test(
       }
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -202,8 +199,7 @@ test.register_message_test(
       }
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -229,9 +225,6 @@ test.register_message_test(
           { device_uuid = mock_child_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -257,9 +250,6 @@ test.register_message_test(
           { device_uuid = mock_parent_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -285,9 +275,6 @@ test.register_message_test(
           { device_uuid = mock_child_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -313,9 +300,6 @@ test.register_message_test(
           { device_uuid = mock_parent_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -343,9 +327,6 @@ test.register_message_test(
           { device_uuid = mock_parent_device.id, capability_id = "powerMeter", capability_attr_id = "power" }
         }
       }
-    },
-    {
-       min_api_version = 15
     }
 )
 
@@ -373,9 +354,6 @@ test.register_message_test(
           { device_uuid = mock_parent_device.id, capability_id = "powerMeter", capability_attr_id = "power" }
         }
       }
-    },
-    {
-       min_api_version = 15
     }
 )
 
@@ -400,9 +378,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_parent_device.id, OnOff.server.commands.On(mock_parent_device):to_endpoint(0x02) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -427,9 +402,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_parent_device.id, OnOff.server.commands.On(mock_parent_device):to_endpoint(0x01) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -454,9 +426,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_parent_device.id, OnOff.server.commands.Off(mock_parent_device):to_endpoint(0x02) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -481,9 +450,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_parent_device.id, OnOff.server.commands.Off(mock_parent_device):to_endpoint(0x01) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -507,10 +473,7 @@ test.register_coroutine_test(
         mock_base_device.id,
         ElectricalMeasurement.attributes.ActivePower:read(mock_base_device):to_endpoint(0x01)
       })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -526,10 +489,7 @@ test.register_coroutine_test(
         mock_parent_device.id,
         ElectricalMeasurement.attributes.ActivePower:read(mock_child_device):to_endpoint(0x02)
       })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

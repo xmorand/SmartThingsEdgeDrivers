@@ -47,9 +47,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_simple_device.id, OnOff.server.commands.On(mock_simple_device):to_endpoint(0x02) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -71,9 +68,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_simple_device.id, OnOff.server.commands.Off(mock_simple_device):to_endpoint(0x02) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 

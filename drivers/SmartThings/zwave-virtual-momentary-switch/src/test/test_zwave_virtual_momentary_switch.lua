@@ -65,9 +65,6 @@ test.register_message_test(
       direction = "send",
       message = mock_momentary_switch:generate_test_message("main", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -84,9 +81,6 @@ test.register_message_test(
       direction = "send",
       message = mock_momentary_switch:generate_test_message("main", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -112,8 +106,7 @@ test.register_message_test(
     }
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -135,8 +128,7 @@ test.register_message_test(
     }
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -184,10 +176,7 @@ test.register_coroutine_test(
         SwitchBinary:Get({})
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 
@@ -234,10 +223,7 @@ test.register_coroutine_test(
         SwitchBinary:Get({})
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -264,10 +250,7 @@ test.register_coroutine_test(
         SwitchBinary:Get({})
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

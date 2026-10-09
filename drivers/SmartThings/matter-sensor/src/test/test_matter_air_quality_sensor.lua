@@ -497,10 +497,7 @@ test.register_coroutine_test(
   "Configure should read units from device and profile change as needed",
   function()
     test_aqs_device_type_do_configure(mock_device, "aqs-temp-humidity-all-level-all-meas")
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -508,10 +505,7 @@ test.register_coroutine_test(
   function()
     test_aqs_device_type_do_configure(mock_device_common, "aqs-temp-humidity-co2-pm25-tvoc-meas")
   end,
-  {
-    test_init = test_init_common,
-    min_api_version = 15
-  }
+  { test_init = test_init_common }
 )
 
 test.register_coroutine_test(
@@ -519,10 +513,7 @@ test.register_coroutine_test(
   function()
     test_aqs_device_type_do_configure(mock_device_level, "aqs-temp-humidity-all-level")
   end,
-  {
-    test_init = test_init_level,
-    min_api_version = 15
-  }
+  { test_init = test_init_level }
 )
 
 test.register_coroutine_test(
@@ -531,10 +522,7 @@ test.register_coroutine_test(
     test_aqs_device_type_do_configure(mock_device_co, "aqs-temp-humidity-all-meas")
     test_aqs_device_type_do_configure(mock_device_co2, "aqs-temp-humidity-co2-pm25-tvoc-meas")
   end,
-  {
-    test_init = test_init_co_co2,
-    min_api_version = 15
-  }
+  { test_init = test_init_co_co2 }
 )
 
 test.register_coroutine_test(
@@ -542,10 +530,7 @@ test.register_coroutine_test(
   function()
     test_aqs_device_type_do_configure(mock_device_tvoc, "aqs-temp-humidity-tvoc-meas")
   end,
-  {
-    test_init = test_init_tvoc,
-    min_api_version = 15
-  }
+  { test_init = test_init_tvoc }
 )
 
 
@@ -566,9 +551,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.temperatureMeasurement.temperature({ value = 40.0, unit = "C" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -588,9 +570,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.relativeHumidityMeasurement.humidity({ value = 40 }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -623,9 +602,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.airQualityHealthConcern.airQualityHealthConcern.hazardous())
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -693,10 +669,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.tvocMeasurement.tvocLevel({value = 750, unit = "ppb"}))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -718,10 +691,7 @@ test.register_coroutine_test(
       mock_device_common:generate_test_message("main", capabilities.fineDustSensor.fineDustLevel({value = 18, unit = "μg/m^3"}))
     )
   end,
-  {
-    test_init = test_init_common,
-    min_api_version = 14
-  }
+  { test_init = test_init_common }
 )
 
 test.register_coroutine_test(
@@ -826,10 +796,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
         mock_device:generate_test_message("main", capabilities.tvocHealthConcern.tvocHealthConcern.hazardous())
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 -- run tests

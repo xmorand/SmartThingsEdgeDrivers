@@ -315,10 +315,7 @@ test.register_coroutine_test(
     test.socket.device_lifecycle:__queue_receive(mock_device_basic:generate_info_changed({ profile = updated_device_profile }))
     test.socket.matter:__expect_send({mock_device_basic.id, subscribe_request})
   end,
-  {
-    test_init = test_init_basic,
-    min_api_version = 15
-  }
+  { test_init = test_init_basic }
 )
 
 local expected_update_metadata= {
@@ -392,10 +389,7 @@ test.register_coroutine_test(
     test.socket.device_lifecycle:__queue_receive(mock_device_ap_thermo_aqs:generate_info_changed({ profile = updated_device_profile }))
     test.socket.matter:__expect_send({mock_device_ap_thermo_aqs.id, subscribe_request})
   end,
-  {
-    test_init = test_init_ap_thermo_aqs_preconfigured,
-    min_api_version = 15
-  }
+  { test_init = test_init_ap_thermo_aqs_preconfigured }
 )
 
 test.run_registered_tests()

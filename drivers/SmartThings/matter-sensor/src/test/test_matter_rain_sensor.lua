@@ -94,9 +94,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_rain:generate_test_message("main", capabilities.rainSensor.rain.detected())
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -129,9 +126,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_rain:generate_test_message("main", capabilities.hardwareFault.hardwareFault.clear())
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 

@@ -487,11 +487,9 @@ function SonosConnection.new(driver, device)
               return
             end
 
-            local url_table =  lb_utils.force_url_table(coordinator_player.player.websocket_url)
-            local url_ip = url_table.host
-            local url_port = url_table.port or SonosApi.DEFAULT_SONOS_PORT
+            local url_ip = lb_utils.force_url_table(coordinator_player.player.websocket_url).host
             local base_url = lb_utils.force_url_table(
-              string.format("https://%s:%s", url_ip, url_port)
+              string.format("https://%s:%s", url_ip, SonosApi.DEFAULT_SONOS_PORT)
             )
             local _, api_key = driver:check_auth(device)
             local maybe_token = driver:get_oauth_token()
@@ -547,8 +545,6 @@ function SonosConnection.new(driver, device)
   self.on_close = function(_)
     log.debug(string.format("OnClose for %s", device_name))
     if self._initialized then
-      self._initialized = false
-      log.debug(string.format("Marking %s as offline due to websocket closure", device_name))
       self.device:offline()
     end
     if self._keepalive then
@@ -568,10 +564,10 @@ function SonosConnection:is_running()
     string.format(
       "%s all connections running? %s",
       self.device.label,
-      st_utils.stringify_table({ coordinator = coord_running, mine = self_running })
+      st_utils.stringify_table({ coordinator = self_running, mine = self_running })
     )
   )
-  return self_running and coord_running and self._initialized
+  return self_running and coord_running
 end
 
 --- Whether or not the connection has a live websocket connection
@@ -588,7 +584,7 @@ function SonosConnection:self_running()
       )
     )
   end
-  return type(unique_key) == "string" and Router.is_connected(unique_key)
+  return type(unique_key) == "string" and Router.is_connected(unique_key) and self._initialized
 end
 
 --- Whether or not the connection has a live websocket connection to its coordinator
@@ -687,7 +683,7 @@ function SonosConnection:start()
   end
 
   if not self:coordinator_running() then
-    --TODO this is not infallible, but is checked below
+    --TODO this is not infallible
     _open_coordinator_socket(self, household_id, player_id, api_key)
   end
 
@@ -702,7 +698,6 @@ function SonosConnection:start()
     and coordinator_unique_key
     and Router.is_connected(coordinator_unique_key)
   then
-    log.debug(string.format("Marking %s as online since all websockets connected", self.device.label))
     self.device:online()
     self._initialized = true
     self._keepalive = true

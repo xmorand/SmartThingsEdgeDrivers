@@ -1,3 +1,4 @@
+zwaveManufacturer:
 zwaveGeneric:
 - id: "GenericSwitch/1"
   deviceLabel: Switch

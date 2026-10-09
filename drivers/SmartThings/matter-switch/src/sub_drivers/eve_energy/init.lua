@@ -246,9 +246,7 @@ end
 local function do_configure(driver, device) end
 
 -- override driver_switched to prevent it running in the main driver
-local function driver_switched(driver, device)
-  device:try_update_metadata({provisioning_state = "PROVISIONED"})
-end
+local function driver_switched(driver, device) end
 
 local function handle_refresh(self, device)
   requestData(device)

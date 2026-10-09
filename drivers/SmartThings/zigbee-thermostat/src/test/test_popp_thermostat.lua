@@ -1,6 +1,3 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 require "integration_test"
 -- Mock out globals
 local test = require "integration_test"
@@ -67,9 +64,6 @@ test.register_message_test(
       message = mock_device:generate_test_message("main",
         capabilities.thermostatHeatingSetpoint.heatingSetpoint({ value = 25.0, unit = "C" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -98,10 +92,7 @@ test.register_coroutine_test(
         Thermostat.attributes.OccupiedHeatingSetpoint:read(mock_device)
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -120,10 +111,7 @@ test.register_coroutine_test(
         cluster_base.write_manufacturer_specific_attribute(mock_device, Thermostat.ID, EXTERNAL_WINDOW_OPEN_DETECTION, MFG_CODE, data_types.Boolean, false)
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -142,10 +130,7 @@ test.register_coroutine_test(
         cluster_base.write_manufacturer_specific_attribute(mock_device, Thermostat.ID, EXTERNAL_WINDOW_OPEN_DETECTION, MFG_CODE, data_types.Boolean, true)
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -166,10 +151,7 @@ test.register_coroutine_test(
       Thermostat.attributes.OccupiedHeatingSetpoint:configure_reporting(mock_device, 5, 300, 50) })
 
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_message_test(
@@ -188,9 +170,6 @@ test.register_message_test(
           { ThermostatMode.thermostatMode.heat.NAME, ThermostatMode.thermostatMode.eco.NAME },
           { visibility = { displayed = false } }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -252,9 +231,6 @@ test.register_message_test(
           MFG_CODE)
       }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -289,10 +265,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       capabilities.temperatureMeasurement.temperature({ value = 25.0, unit = "C" })))
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -317,10 +290,7 @@ test.register_coroutine_test(
         capabilities.battery.battery(batt_perc)))
       test.wait_for_events()
     end
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -354,10 +324,7 @@ test.register_coroutine_test(
         Thermostat.attributes.SystemMode:read(mock_device)
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -391,10 +358,7 @@ test.register_coroutine_test(
         Thermostat.attributes.SystemMode:read(mock_device)
       }
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -408,10 +372,7 @@ test.register_coroutine_test(
       }
     )
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.thermostatMode.thermostatMode.eco()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -460,10 +421,7 @@ test.register_coroutine_test(
         EXTERNAL_WINDOW_OPEN_DETECTION,
         MFG_CODE
       )})
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -477,10 +435,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, Thermostat.ID, attr_report_data, MFG_CODE)
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.temperatureAlarm.temperatureAlarm.cleared()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -494,10 +449,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, Thermostat.ID, attr_report_data, MFG_CODE)
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.switch.switch.off()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

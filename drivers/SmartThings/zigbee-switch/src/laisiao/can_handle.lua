@@ -4,7 +4,6 @@
 return function(opts, driver, device, ...)
 local FINGERPRINTS = {
   { mfr = "LAISIAO", model = "yuba" },
-  { mfr = "LAISIAO", model = "DG60GCM-04-2904W" },
 }
 
   for _, fingerprint in ipairs(FINGERPRINTS) do

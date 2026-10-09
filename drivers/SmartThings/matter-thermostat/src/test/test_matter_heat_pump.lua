@@ -146,10 +146,7 @@ test.register_coroutine_test(
     local component_to_endpoint_map = mock_device:get_field("__component_to_endpoint_map")
     assert(component_to_endpoint_map["thermostatOne"] == THERMOSTAT_ONE_EP, string.format("Thermostat One Endpoint must be %d", THERMOSTAT_ONE_EP))
     assert(component_to_endpoint_map["thermostatTwo"] == THERMOSTAT_TWO_EP, string.format("Thermostat Two Endpoint must be %d", THERMOSTAT_TWO_EP))
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_message_test(
@@ -191,9 +188,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("thermostatTwo", capabilities.thermostatHeatingSetpoint.heatingSetpoint({ value = 23.0, unit = "C" }))
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -236,9 +230,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("thermostatTwo", capabilities.thermostatCoolingSetpoint.coolingSetpoint({ value = 19.0, unit = "C" }))
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -277,9 +268,6 @@ test.register_message_test(
         clusters.Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_device, THERMOSTAT_TWO_EP, 25*100)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -318,9 +306,6 @@ test.register_message_test(
         clusters.Thermostat.attributes.OccupiedCoolingSetpoint:write(mock_device, THERMOSTAT_TWO_EP , 13*100)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -385,9 +370,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("thermostatTwo", capabilities.thermostatMode.thermostatMode.heat())
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -473,9 +455,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("thermostatTwo", capabilities.thermostatMode.supportedThermostatModes({"off", "cool"}, {visibility={displayed=false}}))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -544,9 +523,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("thermostatTwo", capabilities.thermostatMode.thermostatMode.emergency_heat())
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -611,10 +587,7 @@ test.register_message_test(
       message = mock_device_with_auto:generate_test_message("thermostatTwo", capabilities.thermostatMode.thermostatMode.emergency_heat())
     },
   },
-  {
-    test_init = test_init_auto,
-    min_api_version = 15
-  }
+  { test_init = test_init_auto }
 )
 
 test.register_message_test(
@@ -635,9 +608,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.powerMeter.power({ value = 15.0, unit = "W" }))
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -660,9 +630,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.energyMeter.energy({ value = 15, unit = "Wh" }))
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -709,8 +676,7 @@ test.register_coroutine_test(
   {
     test_init = function()
       test_init()
-    end,
-    min_api_version = 15
+    end
   }
 )
 
@@ -762,8 +728,7 @@ test.register_coroutine_test(
   {
     test_init = function()
       test_init()
-    end,
-    min_api_version = 15
+    end
   }
 )
 

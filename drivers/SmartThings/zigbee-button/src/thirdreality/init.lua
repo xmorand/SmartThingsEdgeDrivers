@@ -1,6 +1,3 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local capabilities = require "st.capabilities"
 
 local MULTISTATE_INPUT_ATTR = 0x0012
@@ -44,7 +41,9 @@ local thirdreality_device_handler = {
       }
     }
   },
-  can_handle = require("thirdreality.can_handle"),
+  can_handle = function(opts, driver, device, ...)
+    return device:get_manufacturer() == "Third Reality, Inc" and device:get_model() == "3RSB22BZ"
+  end
 }
 
 return thirdreality_device_handler

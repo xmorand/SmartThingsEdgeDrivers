@@ -74,10 +74,7 @@ test.register_coroutine_test(
                             capabilities.switch.switch.off()
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -116,10 +113,7 @@ test.register_coroutine_test(
                             capabilities.switch.switch.on()
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -145,10 +139,7 @@ test.register_coroutine_test(
                     )
             )
 
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -233,10 +224,7 @@ test.register_coroutine_test(
                             })
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -271,10 +259,7 @@ test.register_coroutine_test(
             )
             test.wait_for_events()
 
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -331,10 +316,7 @@ test.register_coroutine_test(
                             })
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -379,10 +361,7 @@ test.register_coroutine_test(
                     }
             )
 
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -396,10 +375,7 @@ test.register_coroutine_test(
                         )
                     }
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -456,10 +432,7 @@ test.register_coroutine_test(
                     }
             )
             -- if group_id and scene_id are same, do nothing.
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -481,10 +454,7 @@ test.register_coroutine_test(
                             })
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -499,10 +469,7 @@ test.register_coroutine_test(
                     }
             )
             -- driver should do nothing.
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -519,10 +486,7 @@ test.register_coroutine_test(
                             Indicator:Get({})
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 test.register_coroutine_test(
@@ -539,10 +503,7 @@ test.register_coroutine_test(
                             Indicator:Get({})
                     )
             )
-        end,
-        {
-           min_api_version = 14
-        }
+        end
 )
 
 

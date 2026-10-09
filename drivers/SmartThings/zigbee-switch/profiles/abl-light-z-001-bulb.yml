@@ -6,11 +6,7 @@ components:
     version: 1
   - id: switchLevel
     version: 1
-  - id: statelessSwitchLevelStep
-    version: 1
   - id: colorTemperature
-    version: 1
-  - id: statelessColorTemperatureStep
     version: 1
   - id: firmwareUpdate
     version: 1

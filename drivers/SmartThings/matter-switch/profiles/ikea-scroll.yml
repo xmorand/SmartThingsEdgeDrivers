@@ -5,8 +5,6 @@ components:
     capabilities:
       - id: button
         version: 1
-      - id: knob
-        version: 1
       - id: battery
         version: 1
       - id: firmwareUpdate
@@ -14,32 +12,18 @@ components:
       - id: refresh
         version: 1
     categories:
-    - name: Button
+    - name: RemoteController
   - id: group2
     label: Group 2
     capabilities:
       - id: button
         version: 1
-      - id: knob
-        version: 1
     categories:
-    - name: Button
+    - name: RemoteController
   - id: group3
     label: Group 3
     capabilities:
       - id: button
         version: 1
-      - id: knob
-        version: 1
     categories:
-    - name: Button
-preferences:
-  - preferenceId: knobSensitivityGroup1
-    explicit: true
-  - preferenceId: knobSensitivityGroup2
-    explicit: true
-  - preferenceId: knobSensitivityGroup3
-    explicit: true
-metadata:
-  mnmn: SmartThingsEdge
-  vid: ikea-scroll
+    - name: RemoteController

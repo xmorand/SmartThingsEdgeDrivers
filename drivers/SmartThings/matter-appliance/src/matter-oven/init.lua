@@ -1,6 +1,16 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2025 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local capabilities = require "st.capabilities"
 local clusters = require "st.matter.clusters"
@@ -18,10 +28,18 @@ end
 
 local SUPPORTED_OVEN_MODES_MAP = "__supported_oven_modes_map_key_"
 
+local OVEN_DEVICE_ID = 0x007B
 local COOK_SURFACE_DEVICE_TYPE_ID = 0x0077
 local COOK_TOP_DEVICE_TYPE_ID = 0x0078
 local TCC_DEVICE_TYPE_ID = 0x0071
 
+local function is_oven_device(opts, driver, device)
+  local oven_eps = common_utils.get_endpoints_for_dt(device, OVEN_DEVICE_ID)
+  if #oven_eps > 0 then
+    return true
+  end
+  return false
+end
 
 -- Lifecycle Handlers --
 local function device_added(driver, device)
@@ -123,7 +141,7 @@ local matter_oven_handler = {
       [capabilities.temperatureSetpoint.commands.setTemperatureSetpoint.NAME] = handle_temperature_setpoint
     }
   },
-  can_handle = require("matter-oven.can_handle"),
+  can_handle = is_oven_device
 }
 
 return matter_oven_handler

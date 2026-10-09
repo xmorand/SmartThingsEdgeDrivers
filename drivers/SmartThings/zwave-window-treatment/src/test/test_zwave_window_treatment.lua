@@ -1,6 +1,16 @@
--- Copyright 2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2022 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
@@ -79,9 +89,6 @@ test.register_message_test(
         direction = "send",
         message = mock_window_shade_basic:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(0))
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -105,9 +112,6 @@ test.register_message_test(
         direction = "send",
         message = mock_window_shade_basic:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(50))
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -131,9 +135,6 @@ test.register_message_test(
         direction = "send",
         message = mock_window_shade_basic:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(100))
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -164,9 +165,6 @@ test.register_message_test(
       direction = "send",
       message = mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(0))
     }
-  },
-  {
-     min_api_version = 17
   }
 )
 
@@ -197,9 +195,6 @@ test.register_message_test(
       direction = "send",
       message = mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(50))
     }
-  },
-  {
-     min_api_version = 17
   }
 )
 
@@ -230,9 +225,6 @@ test.register_message_test(
       direction = "send",
       message = mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(100))
     }
-  },
-  {
-     min_api_version = 17
   }
 )
 
@@ -264,10 +256,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -298,10 +287,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -320,10 +306,7 @@ test.register_coroutine_test(
             SwitchMultilevel:StopLevelChange({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -354,10 +337,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -388,10 +368,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -417,10 +394,7 @@ test.register_coroutine_test(
     )
     test.socket.capability:__expect_send(mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShade.windowShade.open()))
     test.socket.capability:__expect_send(mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(100)))
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -446,10 +420,7 @@ test.register_coroutine_test(
     )
     test.socket.capability:__expect_send(mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShade.windowShade.closed()))
     test.socket.capability:__expect_send(mock_window_shade_switch_multilevel:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(0)))
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -488,10 +459,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 
@@ -531,10 +499,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -573,55 +538,7 @@ test.register_coroutine_test(
             SwitchMultilevel:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 17
-    }
-)
-
-test.register_coroutine_test(
-  "Setting window shade preset on basic-only device should generate Basic:Set and Basic:Get",
-  function()
-    test.timer.__create_and_queue_test_time_advance_timer(5, "oneshot")
-    test.socket.capability:__queue_receive(
-      {
-        mock_window_shade_basic.id,
-        { capability = "windowShadePreset", component = "main", command = "presetPosition", args = {} }
-      }
-    )
-    test.socket.zwave:__expect_send(
-      zw_test_utils.zwave_test_build_send_command(
-        mock_window_shade_basic,
-        Basic:Set({ value = 50 })
-      )
-    )
-    test.wait_for_events()
-    test.mock_time.advance_time(5)
-    test.socket.zwave:__expect_send(
-      zw_test_utils.zwave_test_build_send_command(
-        mock_window_shade_basic,
-        Basic:Get({})
-      )
-    )
-  end,
-  {
-     min_api_version = 17
-  }
-)
-
-test.register_coroutine_test(
-  "Adding a window treatment device should emit supportedWindowShadeCommands",
-  function()
-    test.socket.device_lifecycle():__queue_receive({ mock_window_shade_basic.id, "added" })
-    test.socket.capability:__expect_send(
-      mock_window_shade_basic:generate_test_message("main", capabilities.windowShade.supportedWindowShadeCommands(
-        {"open", "close", "pause"}, { visibility = { displayed = false } }
-      ))
-    )
-  end,
-  {
-     min_api_version = 17
-  }
+    end
 )
 
 test.run_registered_tests()

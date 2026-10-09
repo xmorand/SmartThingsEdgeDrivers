@@ -49,11 +49,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -73,11 +69,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -97,11 +89,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -121,11 +109,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -145,11 +129,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -169,11 +149,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -193,11 +169,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -218,11 +190,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 
@@ -242,11 +210,7 @@ do
           })
         )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 end
 

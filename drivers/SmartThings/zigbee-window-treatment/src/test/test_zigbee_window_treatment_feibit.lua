@@ -1,6 +1,16 @@
--- Copyright 2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2022 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 -- Mock out globals
 local test = require "integration_test"
@@ -10,7 +20,6 @@ local capabilities = require "st.capabilities"
 local t_utils = require "integration_test.utils"
 
 local Level = clusters.Level
-local WindowCovering = clusters.WindowCovering
 
 local mock_device = test.mock_device.build_test_zigbee_device(
     { profile = t_utils.get_profile_definition("window-treatment-profile.yml"),
@@ -66,10 +75,7 @@ test.register_coroutine_test(
         mock_device:generate_test_message("main", capabilities.windowShade.windowShade.partially_open())
       )
       test.wait_for_events()
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -119,10 +125,7 @@ test.register_coroutine_test(
         mock_device:generate_test_message("main", capabilities.windowShade.windowShade.partially_open())
       )
       test.wait_for_events()
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_message_test(
@@ -143,9 +146,6 @@ test.register_message_test(
         direction = "send",
         message = { mock_device.id, clusters.WindowCovering.server.commands.UpOrOpen(mock_device) }
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -170,9 +170,6 @@ test.register_message_test(
           clusters.WindowCovering.server.commands.DownOrClose(mock_device)
         }
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -192,9 +189,6 @@ test.register_message_test(
           clusters.WindowCovering.server.commands.Stop(mock_device)
         }
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -220,9 +214,6 @@ test.register_message_test(
           Level.server.commands.MoveToLevelWithOnOff(mock_device,math.floor(33/100 * 254))
         }
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -242,10 +233,7 @@ test.register_coroutine_test(
       mock_device.id,
       Level.server.commands.MoveToLevelWithOnOff(mock_device,math.floor(50/100 * 254))
     })
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -263,10 +251,7 @@ test.register_coroutine_test(
       mock_device.id,
       Level.server.commands.MoveToLevelWithOnOff(mock_device,math.floor(50/100 * 254))
     })
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -285,10 +270,7 @@ test.register_coroutine_test(
       mock_device.id,
       Level.server.commands.MoveToLevelWithOnOff(mock_device,math.floor(50/100 * 254))
     })
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -315,10 +297,7 @@ test.register_coroutine_test(
       mock_device.id,
       Level.server.commands.MoveToLevelWithOnOff(mock_device,math.floor(1/100 * 254))
     })
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -345,10 +324,7 @@ test.register_coroutine_test(
       mock_device.id,
       Level.server.commands.MoveToLevelWithOnOff(mock_device,math.floor(0/100 * 254))
     })
-  end,
-  {
-     min_api_version = 17
-  }
+  end
 )
 
 test.register_message_test(
@@ -373,9 +349,6 @@ test.register_message_test(
           Level.server.commands.MoveToLevelWithOnOff(mock_device, math.floor(50 / 100 * 254))
         }
       }
-    },
-    {
-       min_api_version = 17
     }
 )
 
@@ -399,10 +372,7 @@ test.register_coroutine_test(
         mock_device.id,
         Level.attributes.CurrentLevel:read(mock_device)
       })
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -426,12 +396,8 @@ test.register_coroutine_test(
                                               zigbee_test_utils.mock_hub_eui,
                                               Level.ID)
       })
-      test.socket.zigbee:__expect_send({ mock_device.id, WindowCovering.attributes.CurrentPositionLiftPercentage:read(mock_device) })
       mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 17
-    }
+    end
 )
 
 test.run_registered_tests()

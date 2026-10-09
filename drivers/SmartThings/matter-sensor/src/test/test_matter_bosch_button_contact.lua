@@ -80,9 +80,6 @@ test.register_message_test(
                 direction = "send",
                 message = mock_device:generate_test_message("main", button_attr.pushed({state_change = true})) --should send initial press
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -118,9 +115,6 @@ test.register_message_test(
                 direction = "send",
                 message = mock_device:generate_test_message("main", capabilities.button.button.held({state_change = true}))
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -166,9 +160,6 @@ test.register_message_test(
                     )
                 }
             },
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -190,9 +181,6 @@ test.register_message_test(
                 message = mock_device:generate_test_message("main",
                         capabilities.button.supportedButtonValues({"pushed", "double"}, {visibility = {displayed = false}}))
             },
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -230,9 +218,6 @@ test.register_message_test(
                 message = mock_device:generate_test_message("main", capabilities.button.button.double({state_change = true}))
             },
 
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -255,9 +240,6 @@ test.register_message_test(
                         "main", capabilities.battery.battery(math.floor(150 / 2.0 + 0.5))
                 ),
             },
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -290,9 +272,6 @@ test.register_message_test(
                 direction = "send",
                 message = mock_device:generate_test_message("main", capabilities.contactSensor.contact.closed())
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 

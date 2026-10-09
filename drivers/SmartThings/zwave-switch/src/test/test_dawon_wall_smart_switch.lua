@@ -75,9 +75,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("main", capabilities.relativeHumidityMeasurement.humidity({ value = 22 }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -104,9 +101,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("main", capabilities.temperatureMeasurement.temperature({ value = 25, unit = 'C' }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -136,9 +130,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("switch1", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -168,9 +159,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("switch1", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -200,9 +188,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("switch2", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -232,9 +217,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("switch2", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -264,9 +246,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("switch3", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -296,9 +275,6 @@ test.register_message_test(
       direction = "send",
       message = mock_multi_switch:generate_test_message("switch3", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -319,10 +295,7 @@ test.register_coroutine_test(
               Configuration:Set({parameter_number = 1, size = 2, configuration_value = 10 * 60})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_message_test(
@@ -384,8 +357,7 @@ test.register_message_test(
     },
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 

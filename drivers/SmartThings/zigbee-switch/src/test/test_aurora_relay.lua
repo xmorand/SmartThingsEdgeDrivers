@@ -40,10 +40,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id, ElectricalMeasurement.attributes.ACPowerDivisor:read(mock_device) })
     test.socket.zigbee:__expect_send({ mock_device.id, ElectricalMeasurement.attributes.ACPowerMultiplier:read(mock_device) })
     test.socket.zigbee:__expect_send({ mock_device.id, SimpleMetering.attributes.InstantaneousDemand:read(mock_device) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_message_test(
@@ -67,9 +64,6 @@ test.register_message_test(
       direction = "send",
       message = { mock_device.id, OnOff.commands.On(mock_device) }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -94,9 +88,6 @@ test.register_message_test(
       direction = "send",
       message = { mock_device.id, OnOff.commands.Off(mock_device) }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -121,10 +112,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.powerMeter.power({ value = 60.0, unit = "W" }))
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

@@ -97,9 +97,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_freeze_leak:generate_test_message("main", capabilities.temperatureAlarm.temperatureAlarm.freeze())
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -133,9 +130,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_freeze_leak:generate_test_message("main", capabilities.waterSensor.water.wet())
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -168,9 +162,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_freeze_leak:generate_test_message("main", capabilities.hardwareFault.hardwareFault.clear())
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -189,10 +180,7 @@ test.register_coroutine_test(
       mock_device_freeze_leak.id,
       clusters.BooleanStateConfiguration.attributes.CurrentSensitivityLevel:write(mock_device_freeze_leak, 2, 0)
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -209,10 +197,7 @@ test.register_coroutine_test(
       mock_device_freeze_leak.id,
       clusters.BooleanStateConfiguration.attributes.CurrentSensitivityLevel:write(mock_device_freeze_leak, 2, mock_device_freeze_leak:get_field("freezeMax") - 1)
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -242,10 +227,7 @@ test.register_coroutine_test(
       mock_device_freeze_leak.id,
       clusters.BooleanStateConfiguration.attributes.CurrentSensitivityLevel:write(mock_device_freeze_leak, 2, 0)
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.run_registered_tests()

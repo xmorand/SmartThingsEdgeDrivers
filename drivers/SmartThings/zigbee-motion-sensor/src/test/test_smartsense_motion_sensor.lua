@@ -61,16 +61,13 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\x7C")
+      build_motion_status_message(mock_device, "|")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(100)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -78,16 +75,13 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\x7E")
+      build_motion_status_message(mock_device, "~")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(100)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.active()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -95,16 +89,13 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\x58")
+      build_motion_status_message(mock_device, "X")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(70)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -112,16 +103,13 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\x5A")
+      build_motion_status_message(mock_device, "Z")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(70)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.active()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -129,15 +117,12 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\xBD")
+      build_motion_status_message(mock_device, "½")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -145,15 +130,12 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\xBF")
+      build_motion_status_message(mock_device, "¿")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.active()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -161,16 +143,13 @@ test.register_coroutine_test(
   function()
     test.socket.zigbee:__queue_receive({
       mock_device.id,
-      build_motion_status_message(mock_device, "\x30")
+      build_motion_status_message(mock_device, "0")
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.battery.battery(0)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(50)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({ value = -50, unit = "dBm" })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -180,10 +159,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.motionSensor.motion.inactive()))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.lqi(0)))
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.signalStrength.rssi({value = -100, unit = 'dBm'})))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

@@ -79,8 +79,7 @@ test.register_message_test(
     },
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -133,10 +132,7 @@ test.register_coroutine_test(
         utils.serialize_int(notificationValue, 4, false, false)
       )
     })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 -- Test child device switch off command
@@ -167,10 +163,7 @@ test.register_coroutine_test(
         utils.serialize_int(0, 4, false, false)
       )
     })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 -- Test child device level command
@@ -226,10 +219,7 @@ test.register_coroutine_test(
         utils.serialize_int(notificationValue, 4, false, false)
       )
     })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 -- Test child device color command
@@ -289,10 +279,7 @@ test.register_coroutine_test(
         utils.serialize_int(notificationValue, 4, false, false)
       )
     })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 -- Test child device color temperature command
@@ -352,10 +339,7 @@ test.register_coroutine_test(
         utils.serialize_int(notificationValue, 4, false, false)
       )
     })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

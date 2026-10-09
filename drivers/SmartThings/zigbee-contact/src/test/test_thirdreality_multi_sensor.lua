@@ -1,6 +1,3 @@
--- Copyright 2026 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
 local t_utils = require "integration_test.utils"
@@ -52,10 +49,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, 0xFFF1, acceleration_report_inactive, 0x110A)
     })
     test.socket.capability:__expect_send( mock_device:generate_test_message("main", capabilities.accelerationSensor.acceleration.inactive()) )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -69,10 +63,7 @@ test.register_coroutine_test(
       cluster_base.build_test_read_attr_response(attribute_def, mock_device, 1)
     })
     test.socket.capability:__expect_send( mock_device:generate_test_message("main", capabilities.accelerationSensor.acceleration.active()) )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -88,10 +79,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, 0xFFF1, attr_report_data, 0x110A)
     })
     test.socket.capability:__expect_send( mock_device:generate_test_message("main", capabilities.threeAxis.threeAxis({200, 100, 300})) )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

@@ -1,6 +1,3 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local test = require "integration_test"
 local clusters = require "st.zigbee.zcl.clusters"
 local capabilities = require "st.capabilities"
@@ -42,9 +39,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_danfoss:generate_test_message("main", capabilities.thermostatHeatingSetpoint.heatingSetpoint({ value = 25.0, unit = "C" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -53,10 +47,7 @@ test.register_coroutine_test(
   function ()
     test.socket.zigbee:__queue_receive({ mock_device_danfoss.id, Thermostat.attributes.LocalTemperature:build_test_attr_report(mock_device_danfoss, 2100) })
     test.socket.capability:__expect_send(mock_device_danfoss:generate_test_message("main", capabilities.temperatureMeasurement.temperature({ value = 21.0, unit = "C"})))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -64,20 +55,14 @@ test.register_coroutine_test(
   function ()
     test.socket.zigbee:__queue_receive({ mock_device_danfoss.id, Thermostat.attributes.OccupiedHeatingSetpoint:build_test_attr_report(mock_device_danfoss, 2100) })
     test.socket.capability:__expect_send(mock_device_danfoss:generate_test_message("main", capabilities.thermostatHeatingSetpoint.heatingSetpoint({ value = 21.0, unit = "C"})))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
   "Thermostat cooling setpoint reporting should not create setpoint events, the mode is not supported Danfoss",
   function ()
     test.socket.zigbee:__queue_receive({ mock_device_danfoss.id, Thermostat.attributes.OccupiedCoolingSetpoint:build_test_attr_report(mock_device_danfoss, 2100) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -100,10 +85,7 @@ test.register_coroutine_test(
       test.socket.capability:__expect_send( mock_device_danfoss:generate_test_message("main", capabilities.battery.battery(batt_perc)) )
       test.wait_for_events()
     end
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_message_test(
@@ -119,9 +101,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device_danfoss:generate_test_message("main", capabilities.battery.battery(28))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 

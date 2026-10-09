@@ -2,7 +2,6 @@
 -- Licensed under the Apache License, Version 2.0
 
 local clusters = require "st.matter.clusters"
-local capabilities = require "st.capabilities"
 local test = require "integration_test"
 local t_utils = require "integration_test.utils"
 local utils = require "st.utils"
@@ -40,9 +39,6 @@ local mock_device = test.mock_device.build_test_matter_device({
         {cluster_id = clusters.TemperatureMeasurement.ID, cluster_type = "SERVER"},
         {cluster_id = clusters.RelativeHumidityMeasurement.ID, cluster_type = "SERVER"},
         {cluster_id = clusters.PowerSource.ID, cluster_type = "SERVER"},
-      },
-      device_types = {
-        { device_type_id = 0x0301, device_type_revision = 1 } -- Thermostat
       }
     }
   }
@@ -74,9 +70,6 @@ local function test_init()
       subscribe_request:merge(cluster:subscribe(mock_device))
     end
   end
-  test.socket.capability:__expect_send(
-    mock_device:generate_test_message("main", capabilities.thermostatOperatingState.supportedThermostatOperatingStates({"idle", "heating", "cooling"}, {visibility = {displayed = false}}))
-  )
   test.socket.matter:__expect_send({mock_device.id, subscribe_request})
   test.mock_device.add_test_device(mock_device)
 end
@@ -135,9 +128,6 @@ test.register_message_test(
         clusters.Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_device, 1, 35 * 100)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 

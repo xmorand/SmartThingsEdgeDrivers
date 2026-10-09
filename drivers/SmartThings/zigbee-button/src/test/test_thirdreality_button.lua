@@ -1,6 +1,3 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local capabilities = require "st.capabilities"
 local t_utils = require "integration_test.utils"
 local data_types = require "st.zigbee.data_types"
@@ -46,10 +43,7 @@ test.register_coroutine_test(
         capabilities.button.numberOfButtons({ value = 1 }, { visibility = { displayed = false } })
       )
     )
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -63,10 +57,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, 0x0012, attr_report_data, 0x110A)
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.button.button.pushed({ state_change = true })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -80,10 +71,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, 0x0012, attr_report_data, 0x110A)
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.button.button.double({ state_change = true })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -97,10 +85,7 @@ test.register_coroutine_test(
       zigbee_test_utils.build_attribute_report(mock_device, 0x0012, attr_report_data, 0x110A)
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.button.button.held({ state_change = true })))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

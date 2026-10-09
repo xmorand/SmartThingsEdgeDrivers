@@ -128,10 +128,7 @@ test.register_coroutine_test(
                                        })
 
       mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_message_test(
@@ -155,9 +152,6 @@ test.register_message_test(
       direction = "send",
       message = { mock_device.id, OnOffCluster.server.commands.On(mock_device) }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -182,9 +176,6 @@ test.register_message_test(
       direction = "send",
       message = { mock_device.id, OnOffCluster.server.commands.Off(mock_device) }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -212,9 +203,6 @@ test.register_message_test(
         LevelCluster.server.commands.MoveToLevelWithOnOff(mock_device, math.floor(57 * 254 / 100))
       }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -242,9 +230,6 @@ test.register_message_test(
         { device_uuid = mock_device.id, capability_id = "switchLevel", capability_attr_id = "level" }
       }
     },
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -261,9 +246,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.powerMeter.power({ value = 33.3, unit = "W" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -280,9 +262,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.energyMeter.energy({ value = 0.5555, unit = "kWh" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 

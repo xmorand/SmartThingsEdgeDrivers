@@ -1,7 +1,3 @@
--- Copyright 2025 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
-
 local cluster_base = require "st.matter.cluster_base"
 local OperationalStateServerAttributes = require "OperationalState.server.attributes"
 local OperationalStateServerCommands = require "OperationalState.server.commands"

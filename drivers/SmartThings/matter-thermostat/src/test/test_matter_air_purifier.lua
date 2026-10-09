@@ -430,10 +430,7 @@ test.register_coroutine_test(
     mock_device_ap_aqs:expect_metadata_update({ profile = "air-purifier-hepa-ac-aqs-co2-tvoc-meas-co2-radon-level" })
     mock_device_ap_aqs:expect_metadata_update({ provisioning_state = "PROVISIONED" })
   end,
-  {
-    test_init = test_init_ap_aqs,
-    min_api_version = 15
-  }
+  { test_init = test_init_ap_aqs }
 )
 
 test.register_coroutine_test(
@@ -446,10 +443,7 @@ test.register_coroutine_test(
     mock_device_ap_thermo_aqs:expect_metadata_update({ provisioning_state = "PROVISIONED" })
     print(mock_device_ap_thermo_aqs.profile)
   end,
-  {
-    test_init = test_init_ap_thermo_aqs,
-    min_api_version = 15
-  }
+  { test_init = test_init_ap_thermo_aqs }
 )
 
 test.register_coroutine_test(
@@ -471,10 +465,7 @@ test.register_coroutine_test(
       mock_device_ap_thermo_aqs_preconfigured:generate_test_message("main", capabilities.formaldehydeMeasurement.formaldehydeLevel({value = 14, unit = "ppm"}))
     )
   end,
-  {
-    test_init = test_init_ap_thermo_aqs_preconfigured,
-    min_api_version = 15
-  }
+  { test_init = test_init_ap_thermo_aqs_preconfigured }
 )
 
 test.register_message_test(
@@ -528,9 +519,6 @@ test.register_message_test(
         clusters.FanControl.attributes.FanMode:write(mock_device, 1, clusters.FanControl.attributes.FanMode.AUTO)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -572,9 +560,6 @@ test.register_message_test(
         capabilities.airPurifierFanMode.airPurifierFanMode.high.NAME
       }, {visibility={displayed=false}}))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -610,9 +595,6 @@ test.register_message_test(
         clusters.FanControl.attributes.PercentSetting:write(mock_device, 1, 50)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -658,9 +640,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.airPurifierFanMode.airPurifierFanMode.high())
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -719,9 +698,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("activatedCarbonFilter", capabilities.filterStatus.filterStatus.replace())
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -775,9 +751,6 @@ test.register_message_test(
         clusters.FanControl.attributes.WindSetting:write(mock_device, 1, clusters.FanControl.types.WindSettingMask.NATURAL_WIND)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -797,9 +770,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.fanSpeedPercent.percent(100))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -868,9 +838,6 @@ test.register_message_test(
         clusters.FanControl.attributes.RockSetting:write(mock_device_rock, 1, clusters.FanControl.types.RockBitmap.ROCK_UP_DOWN)
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -886,10 +853,7 @@ test.register_coroutine_test(
       clusters.Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_device_ap_thermo_aqs_preconfigured, 7, 2100)
     })
   end,
-  {
-    test_init = test_init_ap_thermo_aqs_preconfigured,
-    min_api_version = 15
-  }
+  { test_init = test_init_ap_thermo_aqs_preconfigured }
 )
 
 test.register_coroutine_test(
@@ -912,10 +876,7 @@ test.register_coroutine_test(
       clusters.ActivatedCarbonFilterMonitoring.server.commands.ResetCondition(mock_device_ap_thermo_aqs_preconfigured, 1)
     })
   end,
-  {
-    test_init = test_init_ap_thermo_aqs_preconfigured,
-    min_api_version = 15
-  }
+  { test_init = test_init_ap_thermo_aqs_preconfigured }
 )
 
 test.run_registered_tests()

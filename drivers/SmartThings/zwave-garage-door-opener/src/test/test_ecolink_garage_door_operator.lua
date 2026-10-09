@@ -1,6 +1,16 @@
--- Copyright 2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2022 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
@@ -57,9 +67,6 @@ test.register_message_test(
         direction = "send",
         message = mock_garage_door:generate_test_message("main", capabilities.doorControl.door.closed())
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -76,9 +83,6 @@ test.register_message_test(
                 direction = "send",
                 message = mock_garage_door:generate_test_message("main", capabilities.doorControl.door.open())
             }
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -119,8 +123,7 @@ test.register_message_test(
   },
   {
     test_init = test_init,
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -159,8 +162,7 @@ test.register_message_test(
     }
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -181,9 +183,6 @@ test.register_message_test(
         direction = "send",
         message = mock_garage_door:generate_test_message("main", capabilities.temperatureMeasurement.temperature({value = 12.2999999, unit = 'C'}))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -204,9 +203,6 @@ test.register_message_test(
               direction = "send",
               message = mock_garage_door:generate_test_message("main", capabilities.temperatureMeasurement.temperature({value = 45.6, unit = 'F'}))
           }
-        },
-        {
-           min_api_version = 14
         }
 )
 
@@ -232,10 +228,7 @@ test.register_coroutine_test(
           parameters = updated_params})
       ))
       mock_garage_door:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -262,10 +255,7 @@ test.register_coroutine_test(
               BarrierOperator:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -292,11 +282,7 @@ test.register_coroutine_test(
                   BarrierOperator:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 
 test.register_coroutine_test(
@@ -309,11 +295,7 @@ test.register_coroutine_test(
       )
       test.wait_for_events()
       test.mock_time.advance_time(1)
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 
   test.register_coroutine_test(
@@ -326,11 +308,7 @@ test.register_coroutine_test(
       )
       test.wait_for_events()
       test.mock_time.advance_time(1)
-    end,
-    {
-       min_api_version = 14
-    }
-
+    end
   )
 
 test.run_registered_tests()

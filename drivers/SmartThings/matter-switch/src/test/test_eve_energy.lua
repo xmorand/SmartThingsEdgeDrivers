@@ -15,28 +15,6 @@ local PRIVATE_ATTR_ID_WATT = 0x130A000A
 local PRIVATE_ATTR_ID_WATT_ACCUMULATED = 0x130A000B
 local PRIVATE_ATTR_ID_ACCUMULATED_CONTROL_POINT = 0x130A000E
 
--- Helper function to add get_endpoints method to mock devices
-local function add_get_endpoints_to_mock(device)
-  device.get_endpoints = function(self, cluster_id, opts)
-    opts = opts or {}
-    local eps = {}
-    for _, ep in ipairs(self.endpoints) do
-      for _, cluster in ipairs(ep.clusters or {}) do
-        if cluster.cluster_id == cluster_id then
-          -- Check feature_bitmap if specified
-          if opts.feature_bitmap == nil or
-             (cluster.feature_map and (cluster.feature_map & opts.feature_bitmap) == opts.feature_bitmap) then
-            table.insert(eps, ep.endpoint_id)
-            break
-          end
-        end
-      end
-    end
-    return eps
-  end
-  return device
-end
-
 local mock_device = test.mock_device.build_test_matter_device({
   profile = t_utils.get_profile_definition("power-energy-powerConsumption.yml"),
   manufacturer_info = {
@@ -75,10 +53,9 @@ local mock_device = test.mock_device.build_test_matter_device({
     }
   }
 })
-add_get_endpoints_to_mock(mock_device)
 
-local mock_eve_device_using_electrical_sensor = test.mock_device.build_test_matter_device({
-  profile = t_utils.get_profile_definition("plug-energy-powerConsumption.yml"),
+local mock_device_electrical_sensor = test.mock_device.build_test_matter_device({
+  profile = t_utils.get_profile_definition("power-energy-powerConsumption.yml"),
   manufacturer_info = {
     vendor_id = 0x130A,
     product_id = 0x0050,
@@ -135,42 +112,30 @@ local mock_eve_device_using_electrical_sensor = test.mock_device.build_test_matt
     }
   }
 })
-add_get_endpoints_to_mock(mock_eve_device_using_electrical_sensor)
 
--- Mock device without Eve Private Cluster (should not match eve_energy sub-driver)
-local mock_device_without_private_cluster = test.mock_device.build_test_matter_device({
-  profile = t_utils.get_profile_definition("plug-binary.yml"),
-  manufacturer_info = {
-    vendor_id = 0x130A,
-    product_id = 0x0051,
-  },
-  endpoints = {
-    {
-      endpoint_id = 0,
-      clusters = {
-        { cluster_id = clusters.Basic.ID, cluster_type = "SERVER" },
-      },
-      device_types = {
-        { device_type_id = 0x0016, device_type_revision = 1 } -- RootNode
-      }
-    },
-    {
-      endpoint_id = 1,
-      clusters = {
-        {
-          cluster_id = clusters.OnOff.ID,
-          cluster_type = "SERVER",
-          cluster_revision = 1,
-          feature_map = 0, --u32 bitmap
-        }
-      },
-      device_types = {
-        { device_type_id = 0x010A, device_type_revision = 1 } -- On/Off Plug
-      }
-    }
+local function test_init_electrical_sensor()
+  test.disable_startup_messages()
+  test.mock_device.add_test_device(mock_device_electrical_sensor)
+  local cluster_subscribe_list = {
+    clusters.OnOff.attributes.OnOff,
+    clusters.ElectricalEnergyMeasurement.attributes.CumulativeEnergyImported,
+    clusters.ElectricalEnergyMeasurement.attributes.PeriodicEnergyImported,
   }
-})
-add_get_endpoints_to_mock(mock_device_without_private_cluster)
+  local subscribe_request = cluster_subscribe_list[1]:subscribe(mock_device_electrical_sensor)
+  for i, clus in ipairs(cluster_subscribe_list) do
+    if i > 1 then subscribe_request:merge(clus:subscribe(mock_device_electrical_sensor)) end
+  end
+
+  test.socket.device_lifecycle:__queue_receive({ mock_device_electrical_sensor.id, "added" })
+  test.socket.matter:__expect_send({mock_device_electrical_sensor.id, subscribe_request})
+
+  test.socket.device_lifecycle:__queue_receive({ mock_device_electrical_sensor.id, "init" })
+  test.socket.matter:__expect_send({mock_device_electrical_sensor.id, subscribe_request})
+
+  test.socket.device_lifecycle:__queue_receive({ mock_device_electrical_sensor.id, "doConfigure" })
+  mock_device_electrical_sensor:expect_metadata_update({ profile = "plug-energy-powerConsumption" })
+  mock_device_electrical_sensor:expect_metadata_update({ provisioning_state = "PROVISIONED" })
+end
 
 local function test_init()
   local cluster_subscribe_list = {
@@ -187,31 +152,6 @@ local function test_init()
   test.mock_device.add_test_device(mock_device)
 end
 test.set_test_init_function(test_init)
-
-test.register_coroutine_test(
-  "Eve Energy sub-driver can_handle should return true for devices with Eve Private Cluster and no Electrical Sensor",
-  function()
-    local eve_energy_can_handle = require("sub_drivers.eve_energy.can_handle")
-    local result, sub_driver = eve_energy_can_handle(nil, nil, mock_device)
-    assert(result == true, "can_handle should return true for Eve device with private cluster and no electrical sensor")
-    assert(sub_driver ~= nil, "sub_driver should be returned")
-  end,
-  {
-    min_api_version = 14
-  }
-)
-
-test.register_coroutine_test(
-  "Eve Energy sub-driver can_handle should return false for devices without Eve Private Cluster",
-  function()
-    local eve_energy_can_handle = require("sub_drivers.eve_energy.can_handle")
-    local result = eve_energy_can_handle(nil, nil, mock_device_without_private_cluster)
-    assert(result == false, "can_handle should return false for device without Eve Private Cluster")
-  end,
-  {
-    min_api_version = 14
-  }
-)
 
 test.register_message_test(
   "On command should send the appropriate commands",
@@ -240,9 +180,6 @@ test.register_message_test(
         clusters.OnOff.server.commands.On(mock_device, 1)
       }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -273,9 +210,6 @@ test.register_message_test(
         clusters.OnOff.server.commands.Off(mock_device, 1)
       }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -293,10 +227,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -308,10 +239,7 @@ test.register_coroutine_test(
 
     test.socket.device_lifecycle:__queue_receive({ mock_device.id, "removed" })
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -342,8 +270,7 @@ test.register_coroutine_test(
       test.mock_device.add_test_device(mock_device)
 
       test.timer.__create_and_queue_test_time_advance_timer(60, "interval", "create_poll_schedule")
-    end,
-    min_api_version = 14
+    end
   }
 )
 
@@ -360,10 +287,7 @@ test.register_coroutine_test(
     refresh_response:merge(cluster_base.read(mock_device, 0x01, PRIVATE_CLUSTER_ID, PRIVATE_ATTR_ID_WATT_ACCUMULATED, nil))
     test.socket.matter:__expect_send({ mock_device.id, refresh_response})
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -387,10 +311,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -414,10 +335,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -453,10 +371,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-    min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -481,10 +396,7 @@ test.register_coroutine_test(
       cluster_base.write(mock_device, 0x01, PRIVATE_CLUSTER_ID, PRIVATE_ATTR_ID_ACCUMULATED_CONTROL_POINT, nil, data) })
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -508,10 +420,7 @@ test.register_coroutine_test(
     )
 
     test.wait_for_events()
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -545,8 +454,7 @@ test.register_coroutine_test(
       test.mock_device.add_test_device(mock_device)
       test.timer.__create_and_queue_test_time_advance_timer(60 * 15, "interval", "create_poll_report_schedule")
       test.timer.__create_and_queue_test_time_advance_timer(60, "interval", "create_poll_schedule")
-    end,
-    min_api_version = 14
+    end
   }
 )
 
@@ -583,7 +491,7 @@ local cumulative_report_val_39 = {
 test.register_coroutine_test(
   "Cumulative Energy measurement should generate correct messages",
     function()
-      mock_device = mock_eve_device_using_electrical_sensor
+      local mock_device = mock_device_electrical_sensor
 
       test.mock_time.advance_time(901) -- move time 15 minutes past 0 (this can be assumed to be true in practice in all cases)
       test.socket.matter:__queue_receive(
@@ -637,14 +545,7 @@ test.register_coroutine_test(
           energy = 39.0
         }))
       )
-    end,
-    {
-      test_init = function()
-        test.disable_startup_messages()
-        test.mock_device.add_test_device(mock_eve_device_using_electrical_sensor)
-      end,
-      min_api_version = 15
-    }
+    end, { test_init = test_init_electrical_sensor }
 )
 
 test.run_registered_tests()

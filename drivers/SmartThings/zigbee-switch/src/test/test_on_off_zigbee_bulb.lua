@@ -45,9 +45,6 @@ test.register_message_test(
           { device_uuid = mock_simple_device.id, capability_id = "switchLevel", capability_attr_id = "level" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -73,9 +70,6 @@ test.register_message_test(
           { device_uuid = mock_simple_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -101,9 +95,6 @@ test.register_message_test(
           { device_uuid = mock_simple_device.id, capability_id = "switch", capability_attr_id = "switch" }
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -130,9 +121,6 @@ test.register_message_test(
                                                                                                     math.floor(57 * 0xFE / 100),
                                                                                                     0) }
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -173,10 +161,7 @@ test.register_coroutine_test(
                                                                                            1)
                                        })
       mock_simple_device:expect_metadata_update({provisioning_state = "PROVISIONED"})
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 -- test.register_coroutine_test(

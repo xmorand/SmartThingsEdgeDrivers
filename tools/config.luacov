@@ -3,8 +3,6 @@ configuration = {
     "scripting-engine",
     "lua_libs",
     "test",
-    "embedded_clusters",
-    "embedded_cluster_utils",
     "unofficial",
     "DishwasherAlarm",
     "DishwasherMode",

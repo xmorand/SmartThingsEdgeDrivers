@@ -71,11 +71,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(updates.preferences.ledIntensity, data_types.Uint8, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_coroutine_test(
@@ -107,11 +103,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(updates.preferences.ledIntensity, data_types.Uint8, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 test.register_coroutine_test(
     "infochanged to check for necessary preferences settings or updated when ledIntensity and minimalIntensity preference settings are zero with swBuild > 106",
@@ -146,11 +138,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(updates.preferences.ledIntensity, data_types.Uint8, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_coroutine_test(
@@ -182,11 +170,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(updates.preferences.ledIntensity, data_types.Uint8, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_coroutine_test(
@@ -212,11 +196,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(600, data_types.Uint16, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_coroutine_test(
@@ -238,11 +218,7 @@ test.register_coroutine_test(
       test.socket.device_lifecycle:__queue_receive(mock_device:generate_info_changed(updates))
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_coroutine_test(
@@ -278,11 +254,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(updates.preferences.ledIntensity, data_types.Uint8, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_coroutine_test(
@@ -314,11 +286,7 @@ test.register_coroutine_test(
                 data_types.validate_or_build_type(updates.preferences.ledIntensity, data_types.Uint8, "payload"))})
       test.socket.zigbee:__set_channel_ordering("relaxed")
 
-   end,
-   {
-      min_api_version = 14
-   }
-
+   end
   )
 
 test.register_message_test(
@@ -358,9 +326,6 @@ test.register_message_test(
           Basic.attributes.ApplicationVersion:read(mock_device)
         }
       },
-    },
-    {
-       min_api_version = 14
     }
 )
 

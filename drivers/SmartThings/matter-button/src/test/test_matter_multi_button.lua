@@ -1,6 +1,3 @@
--- Copyright 2026 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
 local t_utils = require "integration_test.utils"
@@ -134,9 +131,6 @@ test.register_message_test(
     direction = "send",
     message = mock_device:generate_test_message("main", button_attr.pushed({state_change = true})) --should send initial press
   }
-},
-{
-   min_api_version = 15
 }
 )
 
@@ -167,9 +161,6 @@ test.register_message_test(
     direction = "send",
     message = mock_device:generate_test_message("button2", button_attr.pushed({state_change = true})) --should send initial press
   }
-},
-{
-   min_api_version = 15
 }
 )
 
@@ -192,10 +183,7 @@ test.register_coroutine_test(
       )
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("button2", button_attr.held({state_change = true})))
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -217,10 +205,7 @@ test.register_coroutine_test(
       )
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("button3", button_attr.pushed({state_change = true})))
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -241,10 +226,7 @@ test.register_coroutine_test(
         mock_device, 50, {previous_position = 0}
       )
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -281,10 +263,7 @@ test.register_coroutine_test(
       )
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("button4", button_attr.double({state_change = true})))
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -309,10 +288,7 @@ test.register_coroutine_test(
         mock_device, 30, {previous_position = 0}
       )
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -337,10 +313,7 @@ test.register_coroutine_test(
         mock_device, 50, {previous_position = 0}
       )
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_message_test(
@@ -375,9 +348,6 @@ test.register_message_test(
     direction = "send",
     message = mock_device:generate_test_message("main", button_attr.held({state_change = true}))
   }
-},
-{
-   min_api_version = 15
 }
 )
 
@@ -414,9 +384,6 @@ test.register_message_test(
     direction = "send",
     message = mock_device:generate_test_message("main", button_attr.pushed({state_change = true}))
   },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -462,9 +429,6 @@ test.register_message_test(
       )
     }
   },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -486,9 +450,6 @@ test.register_message_test(
       message = mock_device:generate_test_message("main",
         capabilities.button.supportedButtonValues({"pushed", "double"}, {visibility = {displayed = false}}))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -510,9 +471,6 @@ test.register_message_test(
       message = mock_device:generate_test_message("button4",
         capabilities.button.supportedButtonValues({"pushed", "double", "held", "pushed_3x"}, {visibility = {displayed = false}}))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -534,9 +492,6 @@ test.register_message_test(
       message = mock_device:generate_test_message("main",
         capabilities.button.supportedButtonValues({"pushed", "double", "pushed_3x", "pushed_4x", "pushed_5x", "pushed_6x"}, {visibility = {displayed = false}}))
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -574,9 +529,6 @@ test.register_message_test(
     message = mock_device:generate_test_message("main", button_attr.double({state_change = true}))
   },
 
-},
-{
-   min_api_version = 15
 }
 )
 
@@ -614,9 +566,6 @@ test.register_message_test(
     message = mock_device:generate_test_message("main", button_attr.pushed_4x({state_change = true}))
   },
 
-},
-{
-   min_api_version = 15
 }
 )
 
@@ -639,9 +588,6 @@ test.register_message_test(
         "main", capabilities.battery.battery(math.floor(150 / 2.0 + 0.5))
       ),
     },
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -684,9 +630,6 @@ test.register_message_test(
     }
   }
   -- no double event
-},
-{
-   min_api_version = 15
 }
 )
 
@@ -742,9 +685,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("button4", button_attr.pushed({state_change = true}))
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 -- run the tests

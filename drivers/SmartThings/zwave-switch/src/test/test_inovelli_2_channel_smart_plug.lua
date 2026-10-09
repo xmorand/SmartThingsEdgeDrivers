@@ -95,9 +95,6 @@ test.register_message_test(
         })
       )
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -159,9 +156,6 @@ test.register_message_test(
         })
       )
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -202,9 +196,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -245,9 +236,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -288,9 +276,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -331,9 +316,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -403,9 +385,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -476,9 +455,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -536,9 +512,6 @@ test.register_message_test(
         })
       )
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -596,9 +569,6 @@ test.register_message_test(
         })
       )
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -660,9 +630,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.off())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -724,9 +691,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.switch.switch.on())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -772,9 +736,6 @@ test.register_message_test(
           })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -820,9 +781,6 @@ test.register_message_test(
           })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -860,9 +818,6 @@ test.register_message_test(
           })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -901,9 +856,6 @@ test.register_message_test(
           })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -941,9 +893,6 @@ test.register_message_test(
           })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -982,9 +931,6 @@ test.register_message_test(
           })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 

@@ -91,9 +91,6 @@ test.register_message_test(
         message = { mock_device.id, ElectricalMeasurement.attributes.ActivePower:build_test_attr_report(mock_device,
                                                                                                         27) },
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -130,9 +127,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.energyMeter.energy({value = 0.0015, unit = "kWh"}))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -164,10 +158,7 @@ test.register_coroutine_test(
                                          SimpleMetering.attributes.CurrentSummationDelivered:configure_reporting(mock_device, 5, 3600, 1)
                                        })
       mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -192,8 +183,7 @@ test.register_coroutine_test(
     {
       test_init = function()
         -- no op to override auto device add on startup
-      end,
-      min_api_version = 14
+      end
     }
 )
 

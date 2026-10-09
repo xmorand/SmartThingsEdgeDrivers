@@ -104,10 +104,7 @@ test.register_coroutine_test(
               { dst_channels = { 1 } }
           )
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -136,10 +133,7 @@ test.register_coroutine_test(
               { dst_channels = { 2 } }
           )
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -157,10 +151,7 @@ test.register_coroutine_test(
               { encap = zw.ENCAP.AUTO, src_channel = 0, dst_channels = { 3 } }
           )
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_message_test(
@@ -186,8 +177,7 @@ test.register_message_test(
       }
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -214,8 +204,7 @@ test.register_message_test(
       }
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -239,8 +228,7 @@ test.register_message_test(
       }
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -264,8 +252,7 @@ test.register_message_test(
       }
     },
     {
-      inner_block_ordering = "relaxed",
-      min_api_version = 14
+      inner_block_ordering = "relaxed"
     }
 )
 
@@ -290,9 +277,6 @@ test.register_message_test(
         direction = "send",
         message = mock_parent_device:generate_test_message("main", capabilities.energyMeter.energy({ value = 5, unit = "kWh" }))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -317,9 +301,6 @@ test.register_message_test(
         direction = "send",
         message = mock_child_2_device:generate_test_message("main", capabilities.energyMeter.energy({ value = 5, unit = "kWh" }))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -352,9 +333,6 @@ test.register_message_test(
           { device_uuid = mock_parent_device.id, capability_id = "powerMeter", capability_attr_id = "power" }
         }
       }
-    },
-    {
-       min_api_version = 15
     }
 )
 
@@ -387,9 +365,6 @@ test.register_message_test(
           { device_uuid = mock_parent_device.id, capability_id = "powerMeter", capability_attr_id = "power" }
         }
       }
-    },
-    {
-       min_api_version = 15
     }
 )
 
@@ -416,9 +391,6 @@ test.register_message_test(
             "main", capabilities.temperatureMeasurement.temperature({ value = 21.5, unit = 'C' })
         )
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -458,10 +430,7 @@ test.register_coroutine_test(
           mock_parent_device,
           Meter:Get({ scale = Meter.scale.electric_meter.KILOWATT_HOURS }, { dst_channels = { 1 } })
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -500,10 +469,7 @@ test.register_coroutine_test(
           mock_parent_device,
           Meter:Get({ scale = Meter.scale.electric_meter.KILOWATT_HOURS }, { dst_channels = { 1 } })
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -542,10 +508,7 @@ test.register_coroutine_test(
           mock_parent_device,
           Meter:Get({ scale = Meter.scale.electric_meter.KILOWATT_HOURS }, { dst_channels = { 2 } })
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -584,10 +547,7 @@ test.register_coroutine_test(
           mock_parent_device,
           Meter:Get({ scale = Meter.scale.electric_meter.KILOWATT_HOURS }, { dst_channels = { 2 } })
       ))
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -637,10 +597,7 @@ test.register_coroutine_test(
               )
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

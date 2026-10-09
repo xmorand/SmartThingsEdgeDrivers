@@ -1,6 +1,3 @@
--- Copyright 2021-2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 --
 -- Based on https://github.com/iquix/ST-Edge-Driver/blob/master/tuya-window-shade/src/init.lua
 -- Copyright 2021-2022 Jaewon Park (iquix)
@@ -244,7 +241,9 @@ local hanssem_window_treatment = {
     added = device_added,
     infoChanged = device_info_changed
   },
-  can_handle = require("hanssem.can_handle"),
+  can_handle = function(opts, driver, device, ...)
+    return device:get_model() == "TS0601"
+  end
 }
 
 return hanssem_window_treatment

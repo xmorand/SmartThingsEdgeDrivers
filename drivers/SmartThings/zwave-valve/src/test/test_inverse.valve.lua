@@ -1,6 +1,16 @@
--- Copyright 2022 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2022 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
@@ -47,9 +57,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.valve.valve.closed())
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -68,9 +75,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.valve.valve.open())
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -89,9 +93,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.valve.valve.open())
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -110,9 +111,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.valve.valve.closed())
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -143,10 +141,7 @@ test.register_coroutine_test(
               SwitchBinary:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -176,10 +171,7 @@ test.register_coroutine_test(
               SwitchBinary:Get({})
           )
       )
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

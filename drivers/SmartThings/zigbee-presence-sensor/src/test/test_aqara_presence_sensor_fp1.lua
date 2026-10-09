@@ -1,6 +1,3 @@
--- Copyright 2026 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 local test = require "integration_test"
 local cluster_base = require "st.zigbee.cluster_base"
 local t_utils = require "integration_test.utils"
@@ -61,10 +58,7 @@ test.register_coroutine_test(
         data_types.Uint8, 1) })
 
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -89,10 +83,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID, 0x010C, MFG_CODE,
         data_types.Uint8, updates.preferences["stse.sensitivity"]) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -117,10 +108,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID, RESET_MODE, MFG_CODE,
         data_types.Uint8, 0x01) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -145,10 +133,7 @@ test.register_coroutine_test(
     test.socket.zigbee:__expect_send({ mock_device.id,
       cluster_base.write_manufacturer_specific_attribute(mock_device, PRIVATE_CLUSTER_ID, 0x0146, MFG_CODE,
         data_types.Uint8, updates.preferences["stse.approachDistance"]) })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -163,10 +148,7 @@ test.register_coroutine_test(
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       PresenceSensor.presence("present")))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -181,10 +163,7 @@ test.register_coroutine_test(
     })
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       PresenceSensor.presence("not present")))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -204,10 +183,7 @@ test.register_coroutine_test(
     test.mock_time.advance_time(movement_timer)
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       MovementSensor.movement("noMovement")))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -227,10 +203,7 @@ test.register_coroutine_test(
     test.mock_time.advance_time(movement_timer)
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       MovementSensor.movement("noMovement")))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -250,10 +223,7 @@ test.register_coroutine_test(
     test.mock_time.advance_time(movement_timer)
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       MovementSensor.movement("noMovement")))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -273,10 +243,7 @@ test.register_coroutine_test(
     test.mock_time.advance_time(movement_timer)
     test.socket.capability:__expect_send(mock_device:generate_test_message("main",
       MovementSensor.movement("noMovement")))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

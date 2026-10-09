@@ -1,6 +1,3 @@
--- Copyright 2026 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
 -- Mock out globals
 local test = require "integration_test"
 local capabilities = require "st.capabilities"
@@ -44,9 +41,6 @@ test.register_message_test(
       direction = "send",
       message = mock_simple_device:generate_test_message("main", capabilities.switch.switch.on())
      }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -63,9 +57,6 @@ test.register_message_test(
         direction = "send",
         message = mock_simple_device:generate_test_message("main", capabilities.switch.switch.on({state_change=true}))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -82,9 +73,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device_no_prefs:generate_test_message("main", capabilities.switch.switch.on({state_change=true}))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -102,9 +90,6 @@ test.register_message_test(
         direction = "send",
         message = mock_simple_device:generate_test_message("main", capabilities.switch.switch.off({state_change=true}))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -121,9 +106,6 @@ test.register_message_test(
        direction = "send",
        message = mock_simple_device:generate_test_message("main", capabilities.switch.switch.off({state_change=true}))
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -146,9 +128,6 @@ test.register_message_test(
        direction = "send",
        message = mock_simple_device:generate_test_message("main", capabilities.switch.switch.on())
       }
-    },
-    {
-       min_api_version = 14
     }
 )
 
@@ -167,10 +146,7 @@ test.register_coroutine_test(
     test.socket.capability:__queue_receive({ mock_simple_device.id,
       { capability = "switch", component = "main", command = "on", args = {} } })
     test.socket.capability:__expect_send(mock_simple_device:generate_test_message("main", capabilities.switch.switch.on()))
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.run_registered_tests()

@@ -46,9 +46,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.relativeHumidityMeasurement.humidity({ value = 50.0 }))
      }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -68,9 +65,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.relativeHumidityMeasurement.humidity({ value = 0.0 }))
      }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -90,9 +84,6 @@ test.register_message_test(
         direction = "send",
         message = mock_device:generate_test_message("main", capabilities.relativeHumidityMeasurement.humidity({ value = 100.0 }))
      }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -117,10 +108,7 @@ test.register_coroutine_test(
         test.socket.capability:__expect_send( mock_device:generate_test_message("main", capabilities.battery.battery(batt_perc)) )
         test.wait_for_events()
       end
-    end,
-    {
-       min_api_version = 14
-    }
+    end
 )
 
 test.run_registered_tests()

@@ -1,5 +1,16 @@
--- Copyright 2023 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
+-- Copyright 2023 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 local test = require "integration_test"
 local t_utils = require "integration_test.utils"
 local zigbee_test_utils = require "integration_test.zigbee_test_utils"
@@ -100,11 +111,7 @@ test.register_coroutine_test("Configure should configure all necessary attribute
   mock_device:expect_metadata_update({
     provisioning_state = "PROVISIONED"
   })
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 --------------------------------------------------------------------------------
 -- Parent thermostat device
@@ -123,11 +130,7 @@ test.register_coroutine_test("Refresh should read all necessary attributes", fun
   for _, attribute in pairs(attributes) do
     test.socket.zigbee:__expect_send({mock_device.id, attribute:read(mock_device)})
   end
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Temperature reporting should create the appropriate events", function()
   test.socket.zigbee:__queue_receive({mock_device.id,
@@ -137,11 +140,7 @@ test.register_coroutine_test("Temperature reporting should create the appropriat
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Thermostat mode reporting should create the appropriate events", function()
   test.socket.zigbee:__queue_receive({mock_device.id,
@@ -154,11 +153,7 @@ test.register_coroutine_test("Thermostat mode reporting should create the approp
     Thermostat.attributes.SystemMode.HEAT)})
   test.socket.capability:__expect_send(mock_device:generate_test_message("main", capabilities.thermostatMode
     .thermostatMode.heat()))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events", function()
   test.socket.zigbee:__queue_receive({mock_device.id,
@@ -170,11 +165,7 @@ test.register_coroutine_test("ControlSequenceOfOperation reporting should create
         displayed = false
       }
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create the appropriate events", function()
   test.socket.zigbee:__queue_receive({mock_device.id,
@@ -185,11 +176,7 @@ test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create th
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the heating setpoint should generate the appropriate messages", function()
   test.socket.capability:__queue_receive({mock_device.id, {
@@ -200,11 +187,7 @@ test.register_coroutine_test("Setting the heating setpoint should generate the a
   }})
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_device, 2100)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to away should generate the appropriate messages", function()
   test.socket.capability:__queue_receive({mock_device.id, {
@@ -216,11 +199,7 @@ test.register_coroutine_test("Setting the thermostat mode to away should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_device,
     Thermostat.attributes.SystemMode.OFF)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to heat should generate the appropriate messages", function()
   test.socket.capability:__queue_receive({mock_device.id, {
@@ -232,11 +211,7 @@ test.register_coroutine_test("Setting the thermostat mode to heat should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_device,
     Thermostat.attributes.SystemMode.HEAT)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 --------------------------------------------------------------------------------
 -- First child thermostat device
@@ -255,11 +230,7 @@ test.register_coroutine_test("Refresh should read all necessary attributes with 
   for _, attribute in pairs(attributes) do
     test.socket.zigbee:__expect_send({mock_device.id, attribute:read(mock_first_child)})
   end
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Temperature reporting should create the appropriate events with first child device", function()
   test.socket.zigbee:__queue_receive({mock_first_child.id,
@@ -269,11 +240,7 @@ test.register_coroutine_test("Temperature reporting should create the appropriat
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Thermostat mode reporting should create the appropriate events with first child device", function()
   test.socket.zigbee:__queue_receive({mock_first_child.id,
@@ -286,11 +253,7 @@ test.register_coroutine_test("Thermostat mode reporting should create the approp
     Thermostat.attributes.SystemMode.HEAT)})
   test.socket.capability:__expect_send(mock_first_child:generate_test_message("main", capabilities.thermostatMode
     .thermostatMode.heat()))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events with first child device", function()
   test.socket.zigbee:__queue_receive({mock_first_child.id,
@@ -302,11 +265,7 @@ test.register_coroutine_test("ControlSequenceOfOperation reporting should create
         displayed = false
       }
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create the appropriate events with first child device", function()
   test.socket.zigbee:__queue_receive({mock_first_child.id,
@@ -317,11 +276,7 @@ test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create th
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the heating setpoint should generate the appropriate messages with first child device", function()
   test.socket.capability:__queue_receive({mock_first_child.id, {
@@ -332,11 +287,7 @@ test.register_coroutine_test("Setting the heating setpoint should generate the a
   }})
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_first_child, 2100)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to away should generate the appropriate messages with first child device", function()
   test.socket.capability:__queue_receive({mock_first_child.id, {
@@ -348,11 +299,7 @@ test.register_coroutine_test("Setting the thermostat mode to away should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_first_child,
     Thermostat.attributes.SystemMode.OFF)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to heat should generate the appropriate messages with first child device", function()
   test.socket.capability:__queue_receive({mock_first_child.id, {
@@ -364,11 +311,7 @@ test.register_coroutine_test("Setting the thermostat mode to heat should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_first_child,
     Thermostat.attributes.SystemMode.HEAT)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 --------------------------------------------------------------------------------
 -- Second child thermostat device
@@ -387,11 +330,7 @@ test.register_coroutine_test("Refresh should read all necessary attributes with 
   for _, attribute in pairs(attributes) do
     test.socket.zigbee:__expect_send({mock_device.id, attribute:read(mock_second_child)})
   end
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Temperature reporting should create the appropriate events with second child device", function()
   test.socket.zigbee:__queue_receive({mock_second_child.id,
@@ -401,11 +340,7 @@ test.register_coroutine_test("Temperature reporting should create the appropriat
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Thermostat mode reporting should create the appropriate events with second child device", function()
   test.socket.zigbee:__queue_receive({mock_second_child.id,
@@ -418,11 +353,7 @@ test.register_coroutine_test("Thermostat mode reporting should create the approp
     Thermostat.attributes.SystemMode.HEAT)})
   test.socket.capability:__expect_send(mock_second_child:generate_test_message("main", capabilities.thermostatMode
     .thermostatMode.heat()))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events with second child device", function()
   test.socket.zigbee:__queue_receive({mock_second_child.id,
@@ -434,11 +365,7 @@ test.register_coroutine_test("ControlSequenceOfOperation reporting should create
         displayed = false
       }
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create the appropriate events with second child device", function()
   test.socket.zigbee:__queue_receive({mock_second_child.id,
@@ -449,11 +376,7 @@ test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create th
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the heating setpoint should generate the appropriate messages with second child device", function()
   test.socket.capability:__queue_receive({mock_second_child.id, {
@@ -464,11 +387,7 @@ test.register_coroutine_test("Setting the heating setpoint should generate the a
   }})
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_second_child, 2100)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to away should generate the appropriate messages with second child device", function()
   test.socket.capability:__queue_receive({mock_second_child.id, {
@@ -480,11 +399,7 @@ test.register_coroutine_test("Setting the thermostat mode to away should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_second_child,
     Thermostat.attributes.SystemMode.OFF)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to heat should generate the appropriate messages with second child device", function()
   test.socket.capability:__queue_receive({mock_second_child.id, {
@@ -496,11 +411,7 @@ test.register_coroutine_test("Setting the thermostat mode to heat should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_second_child,
     Thermostat.attributes.SystemMode.HEAT)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 --------------------------------------------------------------------------------
 -- Third child thermostat device
@@ -519,11 +430,7 @@ test.register_coroutine_test("Refresh should read all necessary attributes with 
   for _, attribute in pairs(attributes) do
     test.socket.zigbee:__expect_send({mock_device.id, attribute:read(mock_third_child)})
   end
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Temperature reporting should create the appropriate events with third child device", function()
   test.socket.zigbee:__queue_receive({mock_third_child.id,
@@ -533,11 +440,7 @@ test.register_coroutine_test("Temperature reporting should create the appropriat
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Thermostat mode reporting should create the appropriate events with third child device", function()
   test.socket.zigbee:__queue_receive({mock_third_child.id,
@@ -550,11 +453,7 @@ test.register_coroutine_test("Thermostat mode reporting should create the approp
     Thermostat.attributes.SystemMode.HEAT)})
   test.socket.capability:__expect_send(mock_third_child:generate_test_message("main", capabilities.thermostatMode
     .thermostatMode.heat()))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events with third child device", function()
   test.socket.zigbee:__queue_receive({mock_third_child.id,
@@ -566,11 +465,7 @@ test.register_coroutine_test("ControlSequenceOfOperation reporting should create
         displayed = false
       }
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create the appropriate events with third child device", function()
   test.socket.zigbee:__queue_receive({mock_third_child.id,
@@ -581,11 +476,7 @@ test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create th
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the heating setpoint should generate the appropriate messages with third child device", function()
   test.socket.capability:__queue_receive({mock_third_child.id, {
@@ -596,11 +487,7 @@ test.register_coroutine_test("Setting the heating setpoint should generate the a
   }})
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_third_child, 2100)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to away should generate the appropriate messages with third child device", function()
   test.socket.capability:__queue_receive({mock_third_child.id, {
@@ -612,11 +499,7 @@ test.register_coroutine_test("Setting the thermostat mode to away should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_third_child,
     Thermostat.attributes.SystemMode.OFF)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to heat should generate the appropriate messages with third child device", function()
   test.socket.capability:__queue_receive({mock_third_child.id, {
@@ -628,11 +511,7 @@ test.register_coroutine_test("Setting the thermostat mode to heat should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_third_child,
     Thermostat.attributes.SystemMode.HEAT)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 --------------------------------------------------------------------------------
 -- Forth child thermostat device
@@ -651,11 +530,7 @@ test.register_coroutine_test("Refresh should read all necessary attributes with 
   for _, attribute in pairs(attributes) do
     test.socket.zigbee:__expect_send({mock_device.id, attribute:read(mock_forth_child)})
   end
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Temperature reporting should create the appropriate events with forth child device", function()
   test.socket.zigbee:__queue_receive({mock_forth_child.id,
@@ -665,11 +540,7 @@ test.register_coroutine_test("Temperature reporting should create the appropriat
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Thermostat mode reporting should create the appropriate events with forth child device", function()
   test.socket.zigbee:__queue_receive({mock_forth_child.id,
@@ -682,11 +553,7 @@ test.register_coroutine_test("Thermostat mode reporting should create the approp
     Thermostat.attributes.SystemMode.HEAT)})
   test.socket.capability:__expect_send(mock_forth_child:generate_test_message("main", capabilities.thermostatMode
     .thermostatMode.heat()))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events with forth child device", function()
   test.socket.zigbee:__queue_receive({mock_forth_child.id,
@@ -698,11 +565,7 @@ test.register_coroutine_test("ControlSequenceOfOperation reporting should create
         displayed = false
       }
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create the appropriate events with forth child device", function()
   test.socket.zigbee:__queue_receive({mock_forth_child.id,
@@ -713,11 +576,7 @@ test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create th
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the heating setpoint should generate the appropriate messages with forth child device", function()
   test.socket.capability:__queue_receive({mock_forth_child.id, {
@@ -728,11 +587,7 @@ test.register_coroutine_test("Setting the heating setpoint should generate the a
   }})
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_forth_child, 2100)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to away should generate the appropriate messages with forth child device", function()
   test.socket.capability:__queue_receive({mock_forth_child.id, {
@@ -744,11 +599,7 @@ test.register_coroutine_test("Setting the thermostat mode to away should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_forth_child,
     Thermostat.attributes.SystemMode.OFF)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to heat should generate the appropriate messages with forth child device", function()
   test.socket.capability:__queue_receive({mock_forth_child.id, {
@@ -760,11 +611,7 @@ test.register_coroutine_test("Setting the thermostat mode to heat should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_forth_child,
     Thermostat.attributes.SystemMode.HEAT)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 --------------------------------------------------------------------------------
 -- Fifth child thermostat device
@@ -783,11 +630,7 @@ test.register_coroutine_test("Refresh should read all necessary attributes with 
   for _, attribute in pairs(attributes) do
     test.socket.zigbee:__expect_send({mock_device.id, attribute:read(mock_fifth_child)})
   end
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Temperature reporting should create the appropriate events with fifth child device", function()
   test.socket.zigbee:__queue_receive({mock_fifth_child.id,
@@ -797,11 +640,7 @@ test.register_coroutine_test("Temperature reporting should create the appropriat
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Thermostat mode reporting should create the appropriate events with fifth child device", function()
   test.socket.zigbee:__queue_receive({mock_fifth_child.id,
@@ -814,11 +653,7 @@ test.register_coroutine_test("Thermostat mode reporting should create the approp
     Thermostat.attributes.SystemMode.HEAT)})
   test.socket.capability:__expect_send(mock_fifth_child:generate_test_message("main", capabilities.thermostatMode
     .thermostatMode.heat()))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ControlSequenceOfOperation reporting should create the appropriate events with fifth child device", function()
   test.socket.zigbee:__queue_receive({mock_fifth_child.id,
@@ -830,11 +665,7 @@ test.register_coroutine_test("ControlSequenceOfOperation reporting should create
         displayed = false
       }
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create the appropriate events with fifth child device", function()
   test.socket.zigbee:__queue_receive({mock_fifth_child.id,
@@ -845,11 +676,7 @@ test.register_coroutine_test("OccupiedHeatingSetpoint reporting shoulb create th
       value = 21.0,
       unit = "C"
     })))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the heating setpoint should generate the appropriate messages with fifth child device", function()
   test.socket.capability:__queue_receive({mock_fifth_child.id, {
@@ -860,11 +687,7 @@ test.register_coroutine_test("Setting the heating setpoint should generate the a
   }})
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.OccupiedHeatingSetpoint:write(mock_fifth_child, 2100)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to away should generate the appropriate messages with fifth child device", function()
   test.socket.capability:__queue_receive({mock_fifth_child.id, {
@@ -876,11 +699,7 @@ test.register_coroutine_test("Setting the thermostat mode to away should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_fifth_child,
     Thermostat.attributes.SystemMode.OFF)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("Setting the thermostat mode to heat should generate the appropriate messages with fifth child device", function()
   test.socket.capability:__queue_receive({mock_fifth_child.id, {
@@ -892,11 +711,7 @@ test.register_coroutine_test("Setting the thermostat mode to heat should generat
   test.socket.zigbee:__expect_send({mock_device.id,
                                     Thermostat.attributes.SystemMode:write(mock_fifth_child,
     Thermostat.attributes.SystemMode.HEAT)})
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.register_coroutine_test("ThermostatRunningState reporting shoulb create the appropriate events", function()
   test.socket.zigbee:__queue_receive({mock_device.id,
@@ -911,10 +726,6 @@ test.register_coroutine_test("ThermostatRunningState reporting shoulb create the
                                       Thermostat.attributes.ThermostatRunningState:build_test_attr_report(mock_device, 0x0004)})
   test.socket.capability:__expect_send(mock_device:generate_test_message("main",
     capabilities.thermostatOperatingState.thermostatOperatingState({value="fan only"})))
-end,
-{
-   min_api_version = 14
-}
-)
+end)
 
 test.run_registered_tests()

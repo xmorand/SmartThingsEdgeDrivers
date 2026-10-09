@@ -47,9 +47,6 @@ components:
       - id: motionSensor
         version: 1
         optional: true
-      - id: vision.clipAnalysis
-        version: 1
-        optional: true
       - id: firmwareUpdate
         version: 1
       - id: refresh
@@ -133,9 +130,6 @@ deviceConfig:
       version: 1
     - component: main
       capability: motionSensor
-      version: 1
-    - component: main
-      capability: videoCapture2
       version: 1
   automation:
     conditions:

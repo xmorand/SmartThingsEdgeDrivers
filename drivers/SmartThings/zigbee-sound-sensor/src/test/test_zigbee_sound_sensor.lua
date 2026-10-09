@@ -121,10 +121,7 @@ test.register_coroutine_test(
         PollControl.attributes.CheckInInterval:write(mock_device, data_types.Uint32(6480))
     })
     mock_device:expect_metadata_update({ provisioning_state = "PROVISIONED" })
-  end,
-  {
-     min_api_version = 14
-  }
+  end
 )
 
 test.register_message_test(
@@ -190,8 +187,7 @@ test.register_message_test(
     }
   },
   {
-    inner_block_ordering = "relaxed",
-    min_api_version = 14
+    inner_block_ordering = "relaxed"
   }
 )
 
@@ -208,9 +204,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.soundSensor.sound.detected())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -227,9 +220,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.soundSensor.sound.detected())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -246,9 +236,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.soundSensor.sound.not_detected())
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -265,9 +252,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.battery.battery(28))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -292,9 +276,6 @@ test.register_message_test(
         { device_uuid = mock_device.id, capability_id = "temperatureMeasurement", capability_attr_id = "temperature" }
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -316,9 +297,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.temperatureMeasurement.temperatureRange({ value = { minimum = 20.00, maximum = 30.00 }, unit = "C" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 

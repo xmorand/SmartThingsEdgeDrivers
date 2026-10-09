@@ -54,9 +54,6 @@ test.register_message_test(
       direction = "send",
       message = { mock_device.id, OnOff.server.commands.On(mock_device) }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -81,9 +78,6 @@ test.register_message_test(
       direction = "send",
       message = { mock_device.id, OnOff.server.commands.Off(mock_device) }
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -109,9 +103,6 @@ test.register_message_test(
         { device_uuid = mock_device.id, capability_id = "powerMeter", capability_attr_id = "power" }
       }
     }
-  },
-  {
-     min_api_version = 15
   }
 )
 
@@ -129,9 +120,6 @@ test.register_message_test(
       direction = "send",
       message = mock_device:generate_test_message("main", capabilities.powerMeter.power({ value = 9.0, unit = "W" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 
@@ -150,9 +138,6 @@ test.register_message_test(
       message = mock_device:generate_test_message("main",
         capabilities.energyMeter.energy({ value = 15.0, unit = "kWh" }))
     }
-  },
-  {
-     min_api_version = 14
   }
 )
 

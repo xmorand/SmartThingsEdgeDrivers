@@ -1,6 +1,16 @@
--- Copyright 2024 SmartThings, Inc.
--- Licensed under the Apache License, Version 2.0
-
+-- Copyright 2024 SmartThings
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 -- Mock out globals
 local test = require "integration_test"
@@ -62,10 +72,7 @@ test.register_coroutine_test(
       test.socket.capability:__expect_send(
         mock_device:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(0))
       )
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -84,10 +91,7 @@ test.register_coroutine_test(
       test.socket.capability:__expect_send(
         mock_device:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(100))
       )
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -113,10 +117,7 @@ test.register_coroutine_test(
       test.socket.capability:__expect_send(
         mock_device:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(25))
       )
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -133,10 +134,7 @@ test.register_coroutine_test(
         WindowCovering.server.commands.UpOrOpen(mock_device)
       })
       test.wait_for_events()
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -153,10 +151,7 @@ test.register_coroutine_test(
         WindowCovering.server.commands.DownOrClose(mock_device)
       })
       test.wait_for_events()
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -173,10 +168,7 @@ test.register_coroutine_test(
         WindowCovering.server.commands.Stop(mock_device)
       })
       test.wait_for_events()
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -194,10 +186,7 @@ test.register_coroutine_test(
         test.socket.capability:__expect_send( mock_device:generate_test_message("main", capabilities.battery.battery(batt_perc_out)) )
         test.wait_for_events()
       end
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.register_coroutine_test(
@@ -217,10 +206,7 @@ test.register_coroutine_test(
       mock_device.id,
       Basic.attributes.PowerSource:read(mock_device)
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -269,10 +255,7 @@ test.register_coroutine_test(
       mock_device.id,
       Basic.attributes.PowerSource:read(mock_device)
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -301,10 +284,7 @@ test.register_coroutine_test(
       mock_device.id,
       Basic.attributes.PowerSource:read(mock_device)
     })
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -344,10 +324,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(45))
     )
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -387,10 +364,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(85))
     )
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -430,10 +404,7 @@ test.register_coroutine_test(
     test.socket.capability:__expect_send(
       mock_device:generate_test_message("main", capabilities.windowShadeLevel.shadeLevel(50))
     )
-  end,
-  {
-     min_api_version = 15
-  }
+  end
 )
 
 test.register_coroutine_test(
@@ -455,10 +426,7 @@ test.register_coroutine_test(
         Basic.attributes.PowerSource:build_test_attr_report(mock_device, 0)})
         test.socket.capability:__expect_send( mock_device:generate_test_message("main", capabilities.powerSource.powerSource.unknown()))
         test.wait_for_events()
-    end,
-    {
-       min_api_version = 15
-    }
+    end
 )
 
 test.run_registered_tests()
