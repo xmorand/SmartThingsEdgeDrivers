@@ -14,15 +14,6 @@ components:
       values:
         - key: "heatingSetpoint.value"
           range: [ 5, 30 ]
-  - id: thermostatCoolingSetpoint
-  - id: thermostatMode
-    version: 1
-    config:
-      values:
-        - key: "thermostatMode.value"
-          enabledValues:
-            - heat 
-          default: heat
   - id: thermostatOperatingState
     version: 1
     config:
@@ -31,11 +22,6 @@ components:
           enabledValues:
             - heating
             - idle
-  - id: powerMeter
-    version: 1
-    config:
-      values:
-        - key: "powerMeter.value"
   - id: temperatureAlarm
     version: 1
     config:

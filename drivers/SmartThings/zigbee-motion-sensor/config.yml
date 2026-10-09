@@ -1,4 +1,4 @@
-name: 'Zigbee Motion Sensor vX'
+name: 'Zigbee Motion Sensor'
 packageKey: 'zigbee-motion-sensor'
 permissions:
   zigbee: {}

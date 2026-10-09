@@ -1,4 +1,4 @@
-name: 'Zigbee Thermostat vX'
+name: 'Zigbee Thermostat'
 defaultProfile: 'thermostat-battery-powerSource'
 packageKey: 'zigbee-thermostat'
 permissions:
