@@ -55,7 +55,6 @@ local device_init = function(driver, device)
 end
 
 local lazy_load_if_possible = require "lazy_load_subdriver"
-
 local zigbee_switch_driver_template = {
   supported_capabilities = {
     capabilities.switch,
@@ -81,7 +80,7 @@ local zigbee_switch_driver_template = {
     lazy_load_if_possible("rexense"),
     lazy_load_if_possible("sinope"),
     lazy_load_if_possible("sinope-dimmer"),
-    require("sinope-waterheater"),
+     require("sinope-waterheater"),
     lazy_load_if_possible("zigbee-dimmer-power-energy"),
     lazy_load_if_possible("zigbee-metering-plug-power-consumption-report"),
     lazy_load_if_possible("jasco"),
@@ -103,7 +102,6 @@ local zigbee_switch_driver_template = {
     lazy_load_if_possible("laisiao"),
     lazy_load_if_possible("tuya-multi"),
     lazy_load_if_possible("frient")
-
   },
   zigbee_handlers = {
     global = {
@@ -117,12 +115,13 @@ local zigbee_switch_driver_template = {
   },
   current_config_version = 1,
   lifecycle_handlers = {
-    init = configurationMap.power_reconfig_wrapper(device_init),
+    init = configurationMap.reconfig_wrapper(device_init),
     added = lazy_handler("lifecycle_handlers.device_added"),
     infoChanged = lazy_handler("lifecycle_handlers.info_changed"),
     doConfigure = lazy_handler("lifecycle_handlers.do_configure"),
   },
   health_check = false,
+  shared_device_thread_enabled = true,
 }
 defaults.register_for_default_handlers(zigbee_switch_driver_template,
   zigbee_switch_driver_template.supported_capabilities,
