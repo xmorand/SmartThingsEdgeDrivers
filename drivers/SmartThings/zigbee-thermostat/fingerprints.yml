@@ -84,6 +84,11 @@ zigbeeManufacturer:
     manufacturer: Stelpro
     model: STZB402+
     deviceProfileName: thermostat-temperature-temperaturealarm
+  - id: "Stelpro/SMT402AD"
+    deviceLabel: Stelpro Thermostat
+    manufacturer: Stelpro
+    model: SMT402AD
+    deviceProfileName: thermostat-stelpro-profile
   - id: "Stelpro/ST218"
     deviceLabel: Stelpro Thermostat
     manufacturer: Stelpro
@@ -144,11 +149,6 @@ zigbeeManufacturer:
     manufacturer: WALL HERO
     model: ACL-403STC1
     deviceProfileName: thermostat-thirty-buttons-wallhero
-  - id: "SONOFF/TP-WGZBA"
-    deviceLabel: SONOFF Thermostat
-    manufacturer: SONOFF
-    model: TP-WGZBA
-    deviceProfileName: thermostat-sonoff
 zigbeeGeneric:
   - id: "genericThermostat"
     deviceLabel: Zigbee Thermostat
