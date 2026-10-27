@@ -1,4 +1,4 @@
-name: 'Zigbee Switch'
+name: 'Zigbee Switch Vx'
 packageKey: 'zigbee-switch'
 permissions:
   zigbee: {}

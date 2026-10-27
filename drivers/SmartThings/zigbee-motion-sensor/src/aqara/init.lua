@@ -19,6 +19,12 @@ local FREQUENCY_ATTRIBUTE_ID = 0x0102
 
 local MOTION_DETECTED_UINT32 = 65536
 
+local FINGERPRINTS = {
+  { mfr = "LUMI", model = "lumi.motion.ac02" },
+  { mfr = "LUMI", model = "lumi.motion.agl02" },
+  { mfr = "LUMI", model = "lumi.motion.agl04" },
+  { mfr = "LUMI", model = "lumi.motion.ac02" }
+}
 
 local CONFIGURATIONS = {
   {
