@@ -4,7 +4,8 @@
 local STELPRO_THERMOSTAT_FINGERPRINTS = {
   { mfr = "Stelpro", model = "MaestroStat" },
   { mfr = "Stelpro", model = "SORB" },
-  { mfr = "Stelpro", model = "SonomaStyle" }
+  { mfr = "Stelpro", model = "SonomaStyle" },
+  { mfr = "Stelpro", model = "SMT402AD" }
 }
 
 return STELPRO_THERMOSTAT_FINGERPRINTS

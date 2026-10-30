@@ -61,16 +61,18 @@ local device_added = function(self, device)
 end
 
 local do_configure = function(self, device)
+  device:send(device_management.build_bind_request(device, Thermostat.ID, self.environment_info.hub_zigbee_eui))
   device:send(Thermostat.attributes.LocalTemperature:configure_reporting(device, 10, 60, 50))
   device:send(Thermostat.attributes.OccupiedHeatingSetpoint:configure_reporting(device, 1, 600, 50))
-  device:send(Thermostat.attributes.PIHeatingDemand:configure_reporting(device, 1, 60, 1))
-  device:send(cluster_base.configure_reporting(device, data_types.ClusterId(Thermostat.ID) , POWER_ATTTRIBUTE, 0x23 , 1, 60, 1))
+  device:send(Thermostat.attributes.PIHeatingDemand:configure_reporting(device, 1, 900, 1))
+  device:send(cluster_base.configure_reporting(device, data_types.ClusterId(Thermostat.ID) , POWER_ATTTRIBUTE, 0x23 , 1, 900, 1))
 
   device:send(ThermostatUserInterfaceConfiguration.attributes.TemperatureDisplayMode:configure_reporting(device, 1, 0, 1))
   device:send(ThermostatUserInterfaceConfiguration.attributes.KeypadLockout:configure_reporting(device, 1, 0, 1))
   device:send(RelativeHumidity.attributes.MeasuredValue:configure_reporting(device, 10, 300, 1))
-
   device:emit_event(ThermostatMode.thermostatMode.heat())
+
+
 end
 
 local device_init = function(self, device)
@@ -173,17 +175,14 @@ local stelpro_thermostat = {
     added = device_added,
     infoChanged = info_changed
   },
-<<<<<<< HEAD
   capability_handlers = {
     [capabilities.refresh.ID] = {
       [capabilities.refresh.commands.refresh.NAME] = do_refresh,
     }
   },
   can_handle = is_stelpro_thermostat,
-=======
   sub_drivers = require("stelpro.sub_drivers"),
   can_handle = require("stelpro.can_handle"),
->>>>>>> upstream/main
 }
 
 return stelpro_thermostat
